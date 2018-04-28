@@ -18,16 +18,16 @@ https://github.com/docker/docker-py/commits/master
 
 
 ## TODO
-[ ] backend
-  [ ] token
-  [ ] api
-  [ ] container manager
-  [ ]wildcard dns
-  [ ]nginx 
-[ ] CLI
-  [ ] fandogh init
-  [ ] fandogh deploy
-  [ ] fandogh version
-  [ ] fandogh delete
-  [ ] fandogh destory
-  [ ] fandogh status
+- [ ] backend
+  - [ ] token
+  - [ ] api
+  - [ ] container manager
+  - [ ] wildcard dns
+  - [ ] nginx 
+- [ ] CLI
+  - [ ] fandogh init
+  - [ ] fandogh deploy
+  - [ ] fandogh version
+  - [ ] fandogh delete
+  - [ ] fandogh destory
+  - [ ] fandogh status
