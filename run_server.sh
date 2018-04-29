@@ -10,6 +10,8 @@ else
   echo "$NETWORK_NAME already exists"
 fi
 
+docker rm $NGINX_NAME -f
+
 docker run -d  --name $NGINX_NAME \
   --network $NETWORK_NAME \
   --publish 8080:80 \
