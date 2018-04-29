@@ -25,6 +25,7 @@ https://github.com/docker/docker-py/commits/master
   - [ ] wildcard dns
   - [ ] nginx 
   - [ ] docker network
+  - [ ] stream docker build logs in real time
 - [ ] CLI
   - [ ] fandogh init
   - [ ] fandogh deploy
