@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from fandogh.server.api.user.views import *
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/tokens', TokenView.as_view()),
+    path('api/accounts', AccountView.as_view()),
 ]
