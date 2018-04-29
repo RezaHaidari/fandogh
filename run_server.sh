@@ -14,7 +14,7 @@ docker rm $NGINX_NAME -f
 
 docker run -d  --name $NGINX_NAME \
   --network $NETWORK_NAME \
-  --publish 8080:80 \
+  --publish 80:80 \
   -v `pwd`/dockers/nginx/conf.d:/etc/nginx/conf.d \
   nginx:fandogh
 
