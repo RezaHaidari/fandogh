@@ -15,3 +15,4 @@ class AppVersion(models.Model):
     app = models.ForeignKey(WebApp, on_delete=models.CASCADE, related_name='versions')
     version = models.CharField(max_length=30)
     deleted = models.BooleanField(default=False)
+    source = models.FileField()
