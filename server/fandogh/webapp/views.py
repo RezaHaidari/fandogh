@@ -6,7 +6,7 @@ from rest_framework.parsers import FileUploadParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 #
-from server.fandogh.image import trigger_image_building
+from image import trigger_image_building
 from .models import AppVersion
 from .serializers import AppSerializer
 

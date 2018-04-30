@@ -16,3 +16,4 @@ class AppVersion(models.Model):
     version = models.CharField(max_length=30)
     deleted = models.BooleanField(default=False)
     source = models.FileField()
+    state = models.CharField(max_length=60)  # PENDING, BUILDING, BUILD_FAILED, BUILT
