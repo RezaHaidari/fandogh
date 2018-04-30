@@ -26,6 +26,7 @@ https://github.com/docker/docker-py/commits/master
   - [ ] nginx 
   - [ ] docker network
   - [ ] stream docker build logs in real time
+  - [ ] SSL support
 - [ ] CLI
   - [ ] fandogh init
   - [ ] fandogh deploy
