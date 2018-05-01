@@ -1,22 +1,27 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 
 from image.models import Build
 from .models import WebApp, AppVersion
 
 
-class AppSerializer(ModelSerializer):
+class AppSerializer(serializers.ModelSerializer):
     class Meta:
         model = WebApp
         fields = ('name',)
 
 
-class AppVersionSerializer(ModelSerializer):
+class AppVersionSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppVersion
         fields = ('version', 'state')
 
 
-class BuildSerializer(ModelSerializer):
+class BuildSerializer(serializers.ModelSerializer):
     class Meta:
         model = Build
         fields = ('logs', 'start_date', 'end_date')
+
+
+class DeploymentSerializer(serializers.Serializer):
+    img_version = serializers.CharField(max_length=100)
+    app_name = serializers.CharField(max_length=100)

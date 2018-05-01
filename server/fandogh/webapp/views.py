@@ -6,8 +6,7 @@ from rest_framework.views import APIView
 
 #
 from image.image_builder import trigger_image_building
-from image.models import Build
-from .models import AppVersion
+from image.image_deployer import deploy
 from .serializers import *
 
 
@@ -46,5 +45,16 @@ class BuildView(APIView):
             data = BuildSerializer(build).data
             return Response(data)
         return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+
+
+class DeployView(APIView):
+    def post(self, request):
+        serializer = DeploymentSerializer(data=request.data)
+        if serializer.is_valid():
+            app_name = serializer.validated_data['app_name']
+            img_version = serializer.validated_data['img_version']
+            container = deploy(app_name, img_version)
+            return Response("starting container...")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # curl -XPOST http://localhost:8000/api/webapp/apps/app1/versions -F "version=v1" -F "source=@/Users/SOROOSH/projects/fandogh/fandogh/examples/nodejs-app.zip" -H "filename: image" -v
