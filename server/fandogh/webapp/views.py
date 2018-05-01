@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 #
 from image.image_builder import trigger_image_building
-from image.image_deployer import deploy
+from image.image_deployer import deploy, logs
 from .serializers import *
 
 
@@ -54,7 +54,13 @@ class DeployView(APIView):
             app_name = serializer.validated_data['app_name']
             img_version = serializer.validated_data['img_version']
             container = deploy(app_name, img_version)
-            return Response("starting container...")
+            data = ContainerSerializer(instance=container).data
+            return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ContainerLogView(APIView):
+    def get(self, request, container_id):
+        return Response(logs(container_id))
 
 # curl -XPOST http://localhost:8000/api/webapp/apps/app1/versions -F "version=v1" -F "source=@/Users/SOROOSH/projects/fandogh/fandogh/examples/nodejs-app.zip" -H "filename: image" -v

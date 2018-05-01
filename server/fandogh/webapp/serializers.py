@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from image.models import Build
+from image.models import *
 from .models import WebApp, AppVersion
 
 
@@ -25,3 +25,10 @@ class BuildSerializer(serializers.ModelSerializer):
 class DeploymentSerializer(serializers.Serializer):
     img_version = serializers.CharField(max_length=100)
     app_name = serializers.CharField(max_length=100)
+
+
+class ContainerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Container
+        fields = ('container_id',)
+
