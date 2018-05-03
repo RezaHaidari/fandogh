@@ -22,11 +22,14 @@ https://github.com/docker/docker-py/commits/master
   - [ ] token
   - [ ] api
   - [ ] container manager
-  - [ ] wildcard dns
-  - [ ] nginx 
-  - [ ] docker network
+  - [X] wildcard dns
+  - [X] nginx 
+  - [X] docker network
   - [ ] stream docker build logs in real time
-  - [ ] SSL support
+  - [ ] SSL support 
+  - [ ] Volume
+  - [ ] add-ons
+    - [ ] Mysql 
 - [ ] CLI
   - [ ] fandogh init
   - [ ] fandogh deploy
