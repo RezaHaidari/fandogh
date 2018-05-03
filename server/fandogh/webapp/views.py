@@ -24,6 +24,7 @@ class VersionView(APIView):
 
     def post(self, request, app_name):
         source_file = request.FILES.get('source', None)
+        # TODO: validate version
         version = request.data.get('version', None)
         if version:
             app_version = AppVersion(app_id=app_name, version=version, source=source_file)

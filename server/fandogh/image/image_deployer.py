@@ -5,7 +5,7 @@ from image.models import Container
 client = docker.from_env()
 
 # TODO: read from config
-network = 'fandogh-temp'
+network = 'fandogh-network'
 
 
 def deploy(app, version):
