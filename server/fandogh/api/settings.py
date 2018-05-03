@@ -25,7 +25,7 @@ SECRET_KEY = 'x@*ete5c86cse&$h_kwbowgdtj(dnkn4p-a)%xpf4&u83c%%l9'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ALLOWED_HOSTS']
+ALLOWED_HOSTS = ['fandogh.cloud']
 
 # Application definition
 
