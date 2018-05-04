@@ -34,9 +34,11 @@ class VersionView(APIView):
         return Response("version is necessary")
 
     def get(self, request, app_name):
-        versions = AppVersion.objects.filter(app=app_name)
-        data = AppVersionSerializer(instance=versions, many=True).data
-        return Response(data)
+        if WebApp.objects.filter(name=app_name).exists():
+            versions = AppVersion.objects.filter(app=app_name)
+            data = AppVersionSerializer(instance=versions, many=True).data
+            return Response(data)
+        return Response("App with name {} does not exist.".format(app_name), status=status.HTTP_404_NOT_FOUND)
 
 
 class BuildView(APIView):
@@ -48,19 +50,20 @@ class BuildView(APIView):
         return Response("Not found", status=status.HTTP_404_NOT_FOUND)
 
 
-class DeployView(APIView):
+class ServiceView(APIView):
     def post(self, request):
-        serializer = DeploymentSerializer(data=request.data)
+        serializer = ServiceSerializer(data=request.data)
         if serializer.is_valid():
             app_name = serializer.validated_data['app_name']
             img_version = serializer.validated_data['img_version']
-            container = deploy(app_name, img_version)
+            service_name = serializer.validated_data['service_name']
+            container = deploy(app_name, img_version, service_name)
             data = ContainerSerializer(instance=container).data
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ContainerLogView(APIView):
+class ServiceLogView(APIView):
     def get(self, request, container_id):
         return Response(logs(container_id))
 

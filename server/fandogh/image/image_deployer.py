@@ -1,6 +1,6 @@
 import docker
 
-from image.models import Container
+from image.models import Service
 
 client = docker.from_env()
 
@@ -8,14 +8,15 @@ client = docker.from_env()
 network = 'fandogh-network'
 
 
-def deploy(app, version):
-    name = '_'.join([app, version])
+def deploy(app, version, service_name):
+    if not service_name:
+        service_name = '-'.join([app, version])
     img_name = ':'.join([app, version])
-    running_containers = client.containers.list(all=True, filters={'name': name})
+    running_containers = client.containers.list(all=True, filters={'name': service_name})
     if running_containers:
         running_containers[0].remove(force=True)
-    c = client.containers.run(img_name, detach=True, name=name, network=network, mem_limit='100m', cpu_period=1000000, cpu_quota=100000)
-    container = Container(container_id=c.id, name=c.name)
+    c = client.containers.run(img_name, detach=True, name=service_name, network=network, mem_limit='100m', cpu_period=1000000, cpu_quota=100000)
+    container = Service(container_id=c.id, name=c.name)
     container.save()
     return container
 

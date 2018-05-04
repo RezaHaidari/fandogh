@@ -22,13 +22,13 @@ class BuildSerializer(serializers.ModelSerializer):
         fields = ('logs', 'start_date', 'end_date')
 
 
-class DeploymentSerializer(serializers.Serializer):
+class ServiceSerializer(serializers.Serializer):
     img_version = serializers.CharField(max_length=100)
     app_name = serializers.CharField(max_length=100)
+    service_name = serializers.CharField(max_length=100, allow_blank=True, allow_null=True)
 
 
 class ContainerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Container
+        model = Service
         fields = ('container_id',)
-
