@@ -51,12 +51,17 @@ class BuildView(APIView):
 
 
 class ServiceView(APIView):
+    def get(self, request):
+        services = Service.objects.all()
+        data = CreatedServiceSerializer(instance=services, many=True).data
+        return Response(data)
+
     def post(self, request):
         serializer = ServiceSerializer(data=request.data)
         if serializer.is_valid():
             app_name = serializer.validated_data['app_name']
             img_version = serializer.validated_data['img_version']
-            service_name = serializer.validated_data['service_name']
+            service_name = serializer.validated_data.get('service_name')
             container = deploy(app_name, img_version, service_name)
             data = ContainerSerializer(instance=container).data
             return Response(data)

@@ -17,3 +17,4 @@ class Service(models.Model):
     container_id = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     start_date = models.DateTimeField(auto_now_add=True)
+    state = models.CharField(max_length=100)

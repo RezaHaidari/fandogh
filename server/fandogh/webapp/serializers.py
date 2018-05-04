@@ -25,7 +25,13 @@ class BuildSerializer(serializers.ModelSerializer):
 class ServiceSerializer(serializers.Serializer):
     img_version = serializers.CharField(max_length=100)
     app_name = serializers.CharField(max_length=100)
-    service_name = serializers.CharField(max_length=100, allow_blank=True, allow_null=True)
+    service_name = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
+
+
+class CreatedServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = ('name', 'start_date', 'state')
 
 
 class ContainerSerializer(serializers.ModelSerializer):
