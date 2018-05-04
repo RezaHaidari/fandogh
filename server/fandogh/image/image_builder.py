@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import docker
 import zipfile
+import uuid
 
 from docker.errors import BuildError, APIError
 
@@ -35,11 +36,10 @@ def build_task(version):
 
 def prepare_workspace(version):
     zip_ref = zipfile.ZipFile(version.source.open())
-    zip_ref.extractall('/tmp/workspace/')
+    path = '/tmp/workspace/{}'.format(str(uuid.uuid4()))
+    zip_ref.extractall(path)
     zip_ref.close()
-
-    # TODO: naive implementation
-    return '/tmp/workspace/'
+    return path
 
 
 def build(app_name, version, workspace):
