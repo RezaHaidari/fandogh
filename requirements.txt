@@ -2,3 +2,4 @@ docker
 django
 djangorestframework
 djangorestframework-jwt
+gunicorn
