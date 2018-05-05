@@ -42,4 +42,4 @@ class ContainerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Service
-        fields = ('container_id',)
+        fields = ('container_id', 'url',)
