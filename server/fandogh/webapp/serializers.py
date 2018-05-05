@@ -35,6 +35,11 @@ class CreatedServiceSerializer(serializers.ModelSerializer):
 
 
 class ContainerSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj):
+        return 'http://%s.fandogh.cloud' % obj.name
+
     class Meta:
         model = Service
         fields = ('container_id',)
