@@ -62,12 +62,15 @@ class ServiceView(APIView):
         return Response(data)
 
     def post(self, request):
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
         serializer = ServiceSerializer(data=request.data)
         if serializer.is_valid():
             app_name = serializer.validated_data['app_name']
             img_version = serializer.validated_data['img_version']
             service_name = serializer.validated_data.get('service_name')
-            container = deploy(app_name, img_version, service_name)
+            container = deploy(app_name, img_version, service_name, client.user)
             data = ContainerSerializer(instance=container).data
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
