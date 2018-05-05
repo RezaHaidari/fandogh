@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 #
 from image.image_builder import trigger_image_building
 from image.image_deployer import deploy, logs
+from user.util import ClientInfo
 from .serializers import *
 
 
@@ -52,7 +53,11 @@ class BuildView(APIView):
 
 class ServiceView(APIView):
     def get(self, request):
-        services = Service.objects.all()
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+
+        services = Service.objects.filter(owner=client.user.id).all()
         data = CreatedServiceSerializer(instance=services, many=True).data
         return Response(data)
 
