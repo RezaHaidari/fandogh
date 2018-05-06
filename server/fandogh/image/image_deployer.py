@@ -22,6 +22,20 @@ def deploy(app, version, service_name, owner):
     return container
 
 
+def destroy(service_name, owner):
+    running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
+    if running_services:
+        for service in running_services:
+            try:
+                container = client.containers.get(service.container_id)
+                if container:
+                    container.remove(force=True)
+            except docker.errors.NotFound as e:
+                pass
+            service.state = 'SHUTDOWN'
+            service.save()
+
+
 def logs(container_id):
     try:
         return client.containers.get(container_id).logs()

@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 #
 from image.image_builder import trigger_image_building
-from image.image_deployer import deploy, logs
+from image.image_deployer import deploy, logs, destroy
 from user.util import ClientInfo
 from .serializers import *
 
@@ -51,7 +51,7 @@ class BuildView(APIView):
         return Response("Not found", status=status.HTTP_404_NOT_FOUND)
 
 
-class ServiceView(APIView):
+class ServiceListView(APIView):
     def get(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
@@ -74,6 +74,15 @@ class ServiceView(APIView):
             data = ContainerSerializer(instance=container).data
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ServiceView(APIView):
+    def delete(self, request, service_name):
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        destroy(service_name, client.user)
+        return Response("Service destroyed successfully.")
 
 
 class ServiceLogView(APIView):
