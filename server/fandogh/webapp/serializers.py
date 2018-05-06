@@ -7,7 +7,7 @@ from .models import WebApp, AppVersion
 class AppSerializer(serializers.ModelSerializer):
     class Meta:
         model = WebApp
-        fields = ('name',)
+        fields = ('name', 'created_at',)
 
 
 class AppVersionSerializer(serializers.ModelSerializer):

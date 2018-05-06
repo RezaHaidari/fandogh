@@ -1,14 +1,12 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
-# Create your models here.
 class WebApp(models.Model):
-    # class Meta:
-    #     app_label = 'webapp'
-
     name = models.CharField(primary_key=True, max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    owner = models.ForeignKey(User, related_name='apps', on_delete=models.CASCADE)
 
 
 class AppVersion(models.Model):

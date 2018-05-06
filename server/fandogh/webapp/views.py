@@ -12,6 +12,14 @@ from .serializers import *
 
 
 class AppView(APIView):
+    def get(self, request):
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        apps = client.user.apps
+        data = AppSerializer(instance=apps, many=True).data
+        return Response(data)
+
     def post(self, request):
         serializer = AppSerializer(data=request.data)
         if serializer.is_valid():
