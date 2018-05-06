@@ -52,11 +52,18 @@ class VersionView(APIView):
 
 class BuildView(APIView):
     def get(self, request, app_name, app_version):
-        build = Build.objects.filter(version__app=app_name, version=app_version).first()
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+
+        version = AppVersion.objects.filter(app=app_name, version=app_version, app__owner=client.user).first()
+        if not version:
+            return Response("Couldn't find the resource", status.HTTP_404_NOT_FOUND)
+        build = version.builds.first()
         if build:
             data = BuildSerializer(build).data
             return Response(data)
-        return Response("Not found", status=status.HTTP_404_NOT_FOUND)
+        return Response("Couldn't find the resource", status=status.HTTP_404_NOT_FOUND)
 
 
 class ServiceListView(APIView):

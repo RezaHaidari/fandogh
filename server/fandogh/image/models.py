@@ -6,6 +6,9 @@ import uuid
 
 
 class Build(models.Model):
+    class Meta:
+        ordering = ('-start_date',)
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     logs = models.TextField()
     version = models.ForeignKey(AppVersion, on_delete=models.DO_NOTHING, related_name='builds')
