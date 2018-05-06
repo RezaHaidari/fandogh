@@ -21,7 +21,13 @@ class AppView(APIView):
         return Response(data)
 
     def post(self, request):
-        serializer = AppSerializer(data=request.data)
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        request_data = request.data.copy()
+        request_data['owner'] = client.user.id
+        serializer = AppSerializer(data=request_data)
+
         if serializer.is_valid():
             serializer.save()
             return Response("App created successfully")
