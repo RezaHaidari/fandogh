@@ -77,7 +77,7 @@ class ServiceView(APIView):
 
 
 class ServiceLogView(APIView):
-    def get(self, request, container_id):
-        return Response(logs(container_id))
+    def get(self, request, service_id):
+        return Response(logs(service_id))
 
 # curl -XPOST http://localhost:8000/api/webapp/apps/app1/versions -F "version=v1" -F "source=@/Users/SOROOSH/projects/fandogh/fandogh/examples/nodejs-app.zip" -H "filename: image" -v
