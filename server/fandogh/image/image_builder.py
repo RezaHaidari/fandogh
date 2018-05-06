@@ -50,7 +50,7 @@ def build(app_name, version, workspace):
         log_result = ''.join([chunk['stream'] for chunk in output_stream if 'stream' in chunk])
         print(log_result)
     except BuildError as e:
-        log_result = e.build_log
+        log_result = ''.join([chunk['stream'] for chunk in e.build_log if 'stream' in chunk])
     except APIError as e:
         log_result = str(e)
     except ConnectionError as e:
