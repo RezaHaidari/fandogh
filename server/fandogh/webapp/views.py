@@ -91,8 +91,22 @@ class ServiceListView(APIView):
             app_name = serializer.validated_data['app_name']
             img_version = serializer.validated_data['img_version']
             service_name = serializer.validated_data.get('service_name')
-            container = deploy(app_name, img_version, service_name, client.user)
-            data = ContainerSerializer(instance=container).data
+            running_services = Service.objects.filter(owner=client.user, state='RUNNING').exclude(name=service_name).all()
+            # TODO: a quick check for releasing alpha version
+            if running_services and client.user.username != 'soroosh@yahoo.com':
+                return Response("You already have one running service. Please destroy if you want to deploy a new one.", status=status.HTTP_400_BAD_REQUEST)
+
+            version = AppVersion.objects.filter(app__name=app_name, version=img_version, app__owner=client.user).first()
+            if version:
+                if version.state == 'BUILT':
+                    service = deploy(app_name, img_version, service_name, client.user)
+                else:
+                    # TODO: different message for different states
+                    return Response('version has not been build successfully.', status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response('Application or version does not exist.', status=status.HTTP_404_NOT_FOUND)
+
+            data = ContainerSerializer(instance=service).data
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -109,5 +123,3 @@ class ServiceView(APIView):
 class ServiceLogView(APIView):
     def get(self, request, service_id):
         return Response(logs(service_id))
-
-# curl -XPOST http://localhost:8000/api/webapp/apps/app1/versions -F "version=v1" -F "source=@/Users/SOROOSH/projects/fandogh/fandogh/examples/nodejs-app.zip" -H "filename: image" -v

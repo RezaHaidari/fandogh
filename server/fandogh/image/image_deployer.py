@@ -17,9 +17,9 @@ def deploy(app, version, service_name, owner):
         running_containers[0].remove(force=True)
     Service.objects.filter(name=service_name).update(state='SHUTDOWN')
     c = client.containers.run(img_name, detach=True, name=service_name, network=network, mem_limit='100m', cpu_period=1000000, cpu_quota=100000)
-    container = Service(container_id=c.id, name=c.name, state='RUNNING', owner=owner)
-    container.save()
-    return container
+    service = Service(container_id=c.id, name=c.name, state='RUNNING', owner=owner)
+    service.save()
+    return service
 
 
 def destroy(service_name, owner):
