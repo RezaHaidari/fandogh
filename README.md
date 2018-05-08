@@ -29,7 +29,8 @@ https://github.com/docker/docker-py/commits/master
   - [ ] SSL support 
   - [ ] Volume
   - [ ] add-ons
-    - [ ] Mysql 
+  - [ ] Mysql
+  - [ ] Docker Event processor 
 - [ ] CLI
   - [ ] fandogh init
   - [ ] fandogh deploy
