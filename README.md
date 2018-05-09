@@ -19,9 +19,9 @@ https://github.com/docker/docker-py/commits/master
 
 ## TODO
 - [ ] backend
-  - [ ] token
+  - [x] token
   - [ ] api
-  - [ ] container manager
+  - [x] container manager
   - [X] wildcard dns
   - [X] nginx 
   - [X] docker network
@@ -32,9 +32,9 @@ https://github.com/docker/docker-py/commits/master
   - [ ] Mysql
   - [ ] Docker Event processor 
 - [ ] CLI
-  - [ ] fandogh init
-  - [ ] fandogh deploy
-  - [ ] fandogh version
-  - [ ] fandogh delete
-  - [ ] fandogh destory
+  - [x] fandogh init
+  - [x] fandogh deploy
+  - [x] fandogh version
+  - [x] fandogh delete
+  - [x] fandogh destory
   - [ ] fandogh status
