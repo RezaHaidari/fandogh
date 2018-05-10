@@ -24,6 +24,7 @@ def deploy(app, version, service_name, owner):
 
 def destroy(service_name, owner):
     running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
+
     if running_services:
         for service in running_services:
             try:
@@ -34,6 +35,9 @@ def destroy(service_name, owner):
                 pass
             service.state = 'SHUTDOWN'
             service.save()
+        return True
+    else:
+        return False
 
 
 def logs(container_id):

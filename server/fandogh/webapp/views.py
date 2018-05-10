@@ -116,8 +116,11 @@ class ServiceView(APIView):
         client = ClientInfo(request)
         if client.is_anonymous():
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
-        destroy(service_name, client.user)
-        return Response("Service destroyed successfully.")
+        destroyed = destroy(service_name, client.user)
+        if destroyed:
+            return Response("Service destroyed successfully.")
+        else:
+            return Response("No service with name {} running".format(service_name))
 
 
 class ServiceLogView(APIView):
