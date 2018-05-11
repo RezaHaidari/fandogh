@@ -91,10 +91,13 @@ class ServiceListView(APIView):
             app_name = serializer.validated_data['app_name']
             img_version = serializer.validated_data['img_version']
             service_name = serializer.validated_data.get('service_name')
-            running_services = Service.objects.filter(owner=client.user, state='RUNNING').exclude(name=service_name).all()
+            running_services = Service.objects.filter(owner=client.user, state='RUNNING').exclude(
+                name=service_name).all()
             # TODO: a quick check for releasing alpha version
-            if running_services and client.user.username != 'soroosh@yahoo.com':
-                return Response("You already have one running service. Please destroy if you want to deploy a new one.", status=status.HTTP_400_BAD_REQUEST)
+            if len(running_services) > 1 and client.user.username != 'soroosh@yahoo.com':
+                return Response(
+                    "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
+                    status=status.HTTP_400_BAD_REQUEST)
 
             version = AppVersion.objects.filter(app__name=app_name, version=img_version, app__owner=client.user).first()
             if version:
