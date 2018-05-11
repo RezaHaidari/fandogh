@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.http import QueryDict
 from rest_framework import status
@@ -5,7 +7,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 
-from .serializers import UserSerializer
+from common.response import ErrorResponse
+from .serializers import UserSerializer, EarlyAccessRequestSerializer
+
+error_logger = logging.getLogger("error")
 
 
 class TokenView(ObtainJSONWebToken):
@@ -26,6 +31,20 @@ class TokenView(ObtainJSONWebToken):
             return Response(response_data)
 
         return Response("Username or password is wrong", status=status.HTTP_400_BAD_REQUEST)
+
+
+class EarlyAccessView(APIView):
+    def post(self, request):
+        serialized = EarlyAccessRequestSerializer(data=request.data)
+        if serialized.is_valid():
+            try:
+                serialized.save()
+                return Response("Your early access request registered successfully.")
+            except Exception as e:
+                error_logger.error("Error occured in saving  early access request. email is: {}".format(serialized.validated_data['email']))
+
+        else:
+            return ErrorResponse(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class AccountView(APIView):

@@ -25,4 +25,5 @@ urlpatterns = [
     path('api/accounts', AccountView.as_view()),
     # path('api/apps', AppView.as_view()),
     url(r'api/webapp/', include('webapp.url')),
+    url(r'api/users/', include('user.urls')),
 ]
