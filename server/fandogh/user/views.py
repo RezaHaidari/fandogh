@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 
-from common.response import ErrorResponse
+from common.response import ErrorResponse, GeneralResponse
 from .serializers import UserSerializer, EarlyAccessRequestSerializer
 
 error_logger = logging.getLogger("error")
@@ -39,7 +39,7 @@ class EarlyAccessView(APIView):
         if serialized.is_valid():
             try:
                 serialized.save()
-                return Response("Your early access request registered successfully.")
+                return GeneralResponse("Your early access request registered successfully.")
             except Exception as e:
                 error_logger.error("Error occured in saving  early access request. email is: {}".format(serialized.validated_data['email']))
 
