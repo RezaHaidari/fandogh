@@ -26,6 +26,7 @@ class ServiceSerializer(serializers.Serializer):
     img_version = serializers.CharField(max_length=100)
     app_name = serializers.CharField(max_length=100)
     service_name = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
+    environment_variables = serializers.DictField()
 
 
 class CreatedServiceSerializer(serializers.ModelSerializer):

@@ -91,6 +91,7 @@ class ServiceListView(APIView):
             app_name = serializer.validated_data['app_name']
             img_version = serializer.validated_data['img_version']
             service_name = serializer.validated_data.get('service_name')
+            env_variables = serializer.validated_data.get('environment_variables')
             running_services = Service.objects.filter(owner=client.user, state='RUNNING').exclude(
                 name=service_name).all()
             # TODO: a quick check for releasing alpha version
@@ -102,7 +103,7 @@ class ServiceListView(APIView):
             version = AppVersion.objects.filter(app__name=app_name, version=img_version, app__owner=client.user).first()
             if version:
                 if version.state == 'BUILT':
-                    service = deploy(app_name, img_version, service_name, client.user)
+                    service = deploy(app_name, img_version, service_name, client.user, env_variables)
                 else:
                     # TODO: different message for different states
                     return Response('version has not been build successfully.', status=status.HTTP_400_BAD_REQUEST)
