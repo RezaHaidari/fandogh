@@ -46,7 +46,7 @@ class VersionView(APIView):
             app_version.save()
             trigger_image_building(app_version)
             return Response("Version created successfully")
-        return Response("version is necessary")
+        return Response("version is necessary", status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, app_name):
         if WebApp.objects.filter(name=app_name).exists():
