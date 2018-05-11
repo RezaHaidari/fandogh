@@ -124,5 +124,8 @@ class ServiceView(APIView):
 
 
 class ServiceLogView(APIView):
-    def get(self, request, service_id):
-        return Response(logs(service_id))
+    def get(self, request, service_name):
+        service = Service.objects.filter(name=service_name).first()
+        if not service:
+            return Response("Resource not found", status=404)
+        return Response(logs(service.container_id))
