@@ -19,7 +19,12 @@ class AppVersionSerializer(serializers.ModelSerializer):
 class BuildSerializer(serializers.ModelSerializer):
     class Meta:
         model = Build
-        fields = ('logs', 'start_date', 'end_date')
+        fields = ('logs', 'start_date', 'end_date', 'state')
+
+    state = serializers.SerializerMethodField()
+
+    def get_state(self, obj):
+        return obj.version.state
 
 
 class ServiceSerializer(serializers.Serializer):
