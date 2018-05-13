@@ -4,7 +4,12 @@ import docker
 import zipfile
 import uuid
 
+import itertools
+
+import re
+import six
 from docker.errors import BuildError, APIError
+from docker.utils.json_stream import json_stream
 
 from image.models import Build
 
@@ -24,9 +29,15 @@ def build_task(version):
     workspace = prepare_workspace(version)
     img_build.logs = 'workspace is ready.\n'
     img_build.save()
-    (img, log) = build(version.app.name, version.version, workspace)
-    img_build.logs += log
-    img_build.save()
+
+    # (img, log) = build(version.app.name, version.version, workspace)
+
+    def _save_stream_chunk(chunk):
+        if 'stream' in chunk:
+            img_build.logs += chunk['stream']
+            img_build.save()
+
+    (img, log) = build2(version.app.name, version.version, workspace, _save_stream_chunk)
     if img is None:
         version.state = 'FAILED'
     else:
@@ -49,6 +60,44 @@ def build(app_name, version, workspace):
         img, output_stream = client.images.build(path=workspace, tag=tag)
         log_result = ''.join([chunk['stream'] for chunk in output_stream if 'stream' in chunk])
         print(log_result)
+    except BuildError as e:
+        log_result = ''.join([chunk['stream'] for chunk in e.build_log if 'stream' in chunk])
+    except APIError as e:
+        log_result = str(e)
+    except ConnectionError as e:
+        log_result = str(e)
+    except Exception as e:
+        log_result = str(e)
+
+    return img, log_result
+
+
+def build2(app_name, version, workspace, stream_handler=None):
+    tag = ":".join([app_name, version])
+    img = None
+    try:
+        resp = client.images.client.api.build(path=workspace, tag=tag)
+        if isinstance(resp, six.string_types):
+            return client.images.get(resp)
+        last_event = None
+        image_id = None
+        result_stream, internal_stream = itertools.tee(json_stream(resp))
+        for chunk in internal_stream:
+            if stream_handler:
+                stream_handler(chunk)
+            if 'error' in chunk:
+                raise BuildError(chunk['error'], result_stream)
+            if 'stream' in chunk:
+                match = re.search(
+                    r'(^Successfully built |sha256:)([0-9a-f]+)$',
+                    chunk['stream']
+                )
+                if match:
+                    image_id = match.group(2)
+            last_event = chunk
+        if image_id:
+            img = client.images.get(image_id),
+        raise BuildError(last_event or 'Unknown', result_stream)
     except BuildError as e:
         log_result = ''.join([chunk['stream'] for chunk in e.build_log if 'stream' in chunk])
     except APIError as e:
