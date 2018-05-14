@@ -1,17 +1,16 @@
 from concurrent.futures import ThreadPoolExecutor
-
 import docker
 import zipfile
 import uuid
-
 import itertools
-
 import re
 import six
 from docker.errors import BuildError, APIError
 from docker.utils.json_stream import json_stream
-
 from image.models import Build
+import logging
+
+logger = logging.getLogger("docker.commands")
 
 executor = ThreadPoolExecutor(4)
 client = docker.from_env()
@@ -54,21 +53,25 @@ def prepare_workspace(version):
 
 
 def build(app_name, version, workspace):
+    logger.debug("Building {}@{} in {}".format(app_name, version, workspace))
     tag = ":".join([app_name, version])
     img = None
     try:
         img, output_stream = client.images.build(path=workspace, tag=tag)
         log_result = ''.join([chunk['stream'] for chunk in output_stream if 'stream' in chunk])
-        print(log_result)
+        logger.debug("Building {}@{} has been completed:\n{}".format(app_name, version, log_result))
     except BuildError as e:
         log_result = ''.join([chunk['stream'] for chunk in e.build_log if 'stream' in chunk])
+        logger.error("BuildError while building {}@{} :\n{}".format(app_name, version, log_result))
     except APIError as e:
         log_result = str(e)
+        logger.error("APIError while building {}@{} :\n{}".format(app_name, version, log_result))
     except ConnectionError as e:
         log_result = str(e)
+        logger.error("ConnectionError  while building {}@{} :\n{}".format(app_name, version, log_result))
     except Exception as e:
         log_result = str(e)
-
+        logger.error("UnexpectedError while building {}@{} :\n{}".format(app_name, version, log_result))
     return img, log_result
 
 
