@@ -38,6 +38,8 @@ def build_task(version):
 
     (img, log) = build2(version.app.name, version.version, workspace, _save_stream_chunk)
     if img is None:
+        img_build.logs = log
+        img_build.save()
         version.state = 'FAILED'
     else:
         version.state = 'BUILT'
