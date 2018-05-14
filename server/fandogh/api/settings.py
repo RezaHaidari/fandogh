@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import datetime
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
@@ -141,3 +142,15 @@ JWT_AUTH = {
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+from .logging_settings import PRODUCTION_LOGGING, DEVELOPMENT_LOGGING
+
+env = os.environ.get("ENV", "DEV")
+if env == "DEV":
+    LOGGING = DEVELOPMENT_LOGGING
+elif env == "PROD":
+    LOGGING = PRODUCTION_LOGGING
+else:
+    raise ImproperlyConfigured("please set environment variable `ENV` as PROD or DEV, default is DEV")
+
+
