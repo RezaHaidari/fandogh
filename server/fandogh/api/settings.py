@@ -143,7 +143,7 @@ JWT_AUTH = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-from .logging_configurations import PRODUCTION_LOGGING, DEVELOPMENT_LOGGING
+from .logging_settings import PRODUCTION_LOGGING, DEVELOPMENT_LOGGING
 
 env = os.environ.get("ENV", "DEV")
 if env == "DEV":
