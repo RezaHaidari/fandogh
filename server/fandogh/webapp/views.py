@@ -39,6 +39,7 @@ class VersionView(APIView):
 
     def post(self, request, app_name):
         source_file = request.FILES.get('source', None)
+        # TODO: authenticate user
         # TODO: validate version
         version = request.data.get('version', None)
         if version:
