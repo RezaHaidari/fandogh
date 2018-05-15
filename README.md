@@ -15,6 +15,27 @@ fandogh status -V
 ## Links
 https://github.com/docker/docker-py/commits/master
 
+## Logging configuration
+You need to set `ENV` variable which could be either `DEV` or `PROD`, default is `DEV`.environement effects many behavior of the system including `logging`
+Production environment use syslog protocol and send log messages to `/dev/log` on  `local3`, you probably need to configure your syslog application to control log messages.
+#### Rsyslog configuration
+```
+$template TAG_BASE_NAMING,"/var/log/roozame/fandogh.%syslogtag%.log
+local0.*;local1.*;local2.*;local3.*;local4.*;local5.*;local6.*  ?TAG_BASE_NAMING
+```
+Also apply these configurations for logrotate:
+```
+/var/log/fandogh/*.log {
+  size 100M
+  daily
+  rotate 5
+  copytruncate
+  missingok
+  compress
+  delaycompress
+}
+
+```
 
 
 ## TODO
