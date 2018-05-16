@@ -25,6 +25,6 @@ urlpatterns = [
     path('api/accounts', AccountView.as_view()),
     # path('api/apps', AppView.as_view()),
     url(r'api/images/', include('image.urls')),
-    url(r'api/services/', include('service.urls')),
+    url(r'api/services', include('service.urls')),
     url(r'api/users/', include('user.urls')),
 ]
