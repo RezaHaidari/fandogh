@@ -1,5 +1,5 @@
 set -x 
-NETWORK_NAME='fandogh-temp'
+NETWORK_NAME='fandogh-network'
 NGINX_NAME='fandogh-nginx'
 NETWORK_EXISTS=`docker network ls -f name="^$NETWORK_NAME$"| wc -l  | xargs echo`
 if [ $NETWORK_EXISTS -eq 1 ];
