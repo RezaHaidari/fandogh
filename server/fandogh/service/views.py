@@ -1,76 +1,13 @@
 # Create your views here.
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 #
-from image.image_builder import trigger_image_building
 from image.image_deployer import deploy, logs, destroy
 from user.util import ClientInfo
+from service.models import Service
 from .serializers import *
-
-
-class AppView(APIView):
-    def get(self, request):
-        client = ClientInfo(request)
-        if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
-        apps = client.user.apps
-        data = AppSerializer(instance=apps, many=True).data
-        return Response(data)
-
-    def post(self, request):
-        client = ClientInfo(request)
-        if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
-        request_data = request.data.copy()
-        request_data['owner'] = client.user.id
-        serializer = AppSerializer(data=request_data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response("App created successfully")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class VersionView(APIView):
-    parser_classes = (MultiPartParser,)
-
-    def post(self, request, app_name):
-        source_file = request.FILES.get('source', None)
-        # TODO: authenticate user
-        # TODO: validate version
-        version = request.data.get('version', None)
-        if version:
-            app_version = AppVersion(app_id=app_name, version=version, source=source_file)
-            app_version.save()
-            trigger_image_building(app_version)
-            return Response("Version created successfully")
-        return Response("version is necessary", status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request, app_name):
-        if WebApp.objects.filter(name=app_name).exists():
-            versions = AppVersion.objects.filter(app=app_name)
-            data = AppVersionSerializer(instance=versions, many=True).data
-            return Response(data)
-        return Response("App with name {} does not exist.".format(app_name), status=status.HTTP_404_NOT_FOUND)
-
-
-class BuildView(APIView):
-    def get(self, request, app_name, app_version):
-        client = ClientInfo(request)
-        if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
-
-        version = AppVersion.objects.filter(app=app_name, version=app_version, app__owner=client.user).first()
-        if not version:
-            return Response("Couldn't find the resource", status.HTTP_404_NOT_FOUND)
-        build = version.builds.first()
-        if build:
-            data = BuildSerializer(build).data
-            return Response(data)
-        return Response("Couldn't find the resource", status=status.HTTP_404_NOT_FOUND)
 
 
 class ServiceListView(APIView):
@@ -101,7 +38,7 @@ class ServiceListView(APIView):
                     "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
                     status=status.HTTP_400_BAD_REQUEST)
 
-            version = AppVersion.objects.filter(app__name=app_name, version=img_version, app__owner=client.user).first()
+            version = ImageVersion.objects.filter(app__name=app_name, version=img_version, app__owner=client.user).first()
             if version:
                 if version.state == 'BUILT':
                     service = deploy(app_name, img_version, service_name, client.user, env_variables)

@@ -1,30 +1,6 @@
 from rest_framework import serializers
 
-from image.models import *
-from .models import WebApp, AppVersion
-
-
-class AppSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WebApp
-        fields = ('name', 'created_at', 'owner')
-
-
-class AppVersionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AppVersion
-        fields = ('version', 'state')
-
-
-class BuildSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Build
-        fields = ('logs', 'start_date', 'end_date', 'state')
-
-    state = serializers.SerializerMethodField()
-
-    def get_state(self, obj):
-        return obj.version.state
+from service.models import Service
 
 
 class ServiceSerializer(serializers.Serializer):

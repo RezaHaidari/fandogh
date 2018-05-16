@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'webapp.apps.WebappConfig',
+    'service.apps.WebappConfig',
     'image.apps.ImageAppConfig',
     'user.apps.UserConfig'
 ]
@@ -140,7 +140,6 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=2)
 }
 
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 from .logging_settings import PRODUCTION_LOGGING, DEVELOPMENT_LOGGING
@@ -152,5 +151,3 @@ elif env == "PROD":
     LOGGING = PRODUCTION_LOGGING
 else:
     raise ImproperlyConfigured("please set environment variable `ENV` as PROD or DEV, default is DEV")
-
-
