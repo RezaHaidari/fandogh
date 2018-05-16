@@ -26,6 +26,7 @@ SECRET_KEY = 'x@*ete5c86cse&$h_kwbowgdtj(dnkn4p-a)%xpf4&u83c%%l9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+APPEND_SLASH = False
 
 ALLOWED_HOSTS = ['fandogh.cloud', 'localhost']
 
@@ -40,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'webapp.apps.WebappConfig',
+    'service.apps.WebappConfig',
     'image.apps.ImageAppConfig',
     'user.apps.UserConfig'
 ]
@@ -140,7 +141,6 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=2)
 }
 
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 from .logging_settings import PRODUCTION_LOGGING, DEVELOPMENT_LOGGING
@@ -152,5 +152,3 @@ elif env == "PROD":
     LOGGING = PRODUCTION_LOGGING
 else:
     raise ImproperlyConfigured("please set environment variable `ENV` as PROD or DEV, default is DEV")
-
-

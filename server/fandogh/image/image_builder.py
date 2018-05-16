@@ -7,7 +7,7 @@ import re
 import six
 from docker.errors import BuildError, APIError
 from docker.utils.json_stream import json_stream
-from image.models import Build
+from image.models import ImageBuild
 import logging
 
 logger = logging.getLogger("docker.commands")
@@ -21,7 +21,7 @@ def trigger_image_building(version):
 
 
 def build_task(version):
-    img_build = Build(version=version)
+    img_build = ImageBuild(version=version)
     img_build.save()
     version.state = 'BUILDING'
     version.save()
@@ -29,14 +29,12 @@ def build_task(version):
     img_build.logs = 'workspace is ready.\n'
     img_build.save()
 
-    # (img, log) = build(version.app.name, version.version, workspace)
-
     def _save_stream_chunk(chunk):
         if 'stream' in chunk:
             img_build.logs += chunk['stream']
             img_build.save()
 
-    (img, log) = build2(version.app.name, version.version, workspace, _save_stream_chunk)
+    (img, log) = build2(version.image.name, version.version, workspace, _save_stream_chunk)
     if img is None:
         img_build.logs = log
         img_build.save()
@@ -54,31 +52,31 @@ def prepare_workspace(version):
     return path
 
 
-def build(app_name, version, workspace):
-    logger.debug("Building {}@{} in {}".format(app_name, version, workspace))
-    tag = ":".join([app_name, version])
+def build(image_name, version, workspace):
+    logger.debug("Building {}@{} in {}".format(image_name, version, workspace))
+    tag = ":".join([image_name, version])
     img = None
     try:
         img, output_stream = client.images.build(path=workspace, tag=tag)
         log_result = ''.join([chunk['stream'] for chunk in output_stream if 'stream' in chunk])
-        logger.debug("Building {}@{} has been completed:\n{}".format(app_name, version, log_result))
+        logger.debug("Building {}@{} has been completed:\n{}".format(image_name, version, log_result))
     except BuildError as e:
         log_result = ''.join([chunk['stream'] for chunk in e.build_log if 'stream' in chunk])
-        logger.error("BuildError while building {}@{} :\n{}".format(app_name, version, log_result))
+        logger.error("BuildError while building {}@{} :\n{}".format(image_name, version, log_result))
     except APIError as e:
         log_result = str(e)
-        logger.error("APIError while building {}@{} :\n{}".format(app_name, version, log_result))
+        logger.error("APIError while building {}@{} :\n{}".format(image_name, version, log_result))
     except ConnectionError as e:
         log_result = str(e)
-        logger.error("ConnectionError  while building {}@{} :\n{}".format(app_name, version, log_result))
+        logger.error("ConnectionError  while building {}@{} :\n{}".format(image_name, version, log_result))
     except Exception as e:
         log_result = str(e)
-        logger.error("UnexpectedError while building {}@{} :\n{}".format(app_name, version, log_result))
+        logger.error("UnexpectedError while building {}@{} :\n{}".format(image_name, version, log_result))
     return img, log_result
 
 
-def build2(app_name, version, workspace, stream_handler=None):
-    tag = ":".join([app_name, version])
+def build2(image_name, version, workspace, stream_handler=None):
+    tag = ":".join([image_name, version])
     img = None
     try:
         resp = client.images.client.api.build(path=workspace, tag=tag)

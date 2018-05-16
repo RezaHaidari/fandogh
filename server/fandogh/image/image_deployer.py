@@ -1,6 +1,7 @@
 import docker
-from image.models import Service
 import logging
+
+from service.models import Service
 
 logger = logging.getLogger("docker.deploy")
 client = docker.from_env()
