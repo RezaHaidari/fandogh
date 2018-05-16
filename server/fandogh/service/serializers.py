@@ -4,8 +4,8 @@ from service.models import Service
 
 
 class ServiceSerializer(serializers.Serializer):
-    img_version = serializers.CharField(max_length=100)
-    app_name = serializers.CharField(max_length=100)
+    image_name = serializers.CharField(max_length=100)
+    image_version = serializers.CharField(max_length=100)
     service_name = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
     environment_variables = serializers.DictField()
 

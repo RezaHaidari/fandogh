@@ -26,8 +26,8 @@ class ServiceListView(APIView):
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
         serializer = ServiceSerializer(data=request.data)
         if serializer.is_valid():
-            app_name = serializer.validated_data['app_name']
-            img_version = serializer.validated_data['img_version']
+            image_name = serializer.validated_data['image_name']
+            image_version = serializer.validated_data['image_version']
             service_name = serializer.validated_data.get('service_name')
             env_variables = serializer.validated_data.get('environment_variables')
             running_services = Service.objects.filter(owner=client.user, state='RUNNING').exclude(
@@ -38,10 +38,10 @@ class ServiceListView(APIView):
                     "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
                     status=status.HTTP_400_BAD_REQUEST)
 
-            version = ImageVersion.objects.filter(image__name=app_name, version=img_version, image__owner=client.user).first()
+            version = ImageVersion.objects.filter(image__name=image_name, version=image_version, image__owner=client.user).first()
             if version:
                 if version.state == 'BUILT':
-                    service = deploy(app_name, img_version, service_name, client.user, env_variables)
+                    service = deploy(image_name, image_version, service_name, client.user, env_variables)
                 else:
                     # TODO: different message for different states
                     return Response('version has not been build successfully.', status=status.HTTP_400_BAD_REQUEST)
