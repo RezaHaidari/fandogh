@@ -10,7 +10,7 @@ client = docker.from_env()
 network = 'fandogh-network'
 
 
-def deploy(app, version, service_name, owner, env_variables={}):
+def deploy(app, version, service_name, owner, env_variables={}, port=80):
     if not service_name:
         service_name = '-'.join([app, version])
     logger.debug("Deploying {}@{} as {} for {} user with these variables: {}".format(app, version, service_name, owner,
@@ -26,6 +26,7 @@ def deploy(app, version, service_name, owner, env_variables={}):
                               name=service_name,
                               network=network,
                               environment=env_variables,
+                              ports = {port: 80}
                               mem_limit='200m',
                               cpu_period=1000000,
                               cpu_quota=100000)

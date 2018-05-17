@@ -8,6 +8,7 @@ class ServiceSerializer(serializers.Serializer):
     image_version = serializers.CharField(max_length=100)
     service_name = serializers.CharField(max_length=100, required=False, allow_blank=True, allow_null=True)
     environment_variables = serializers.DictField()
+    port = serializers.IntegerField(default=80)
 
 
 class CreatedServiceSerializer(serializers.ModelSerializer):
