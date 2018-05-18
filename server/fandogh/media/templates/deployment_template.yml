@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{service_name}}-deployment
+  name: {{service_name}}
 spec:
   replicas: 1
   template:
@@ -13,4 +13,4 @@ spec:
       - name: {{service_name}}
         image: {{image_name}}:{{image_version}}
         ports:
-          - containerPort: 80
+          - containerPort: {{service_port}}
