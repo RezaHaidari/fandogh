@@ -26,7 +26,7 @@ def deploy(app, version, service_name, owner, env_variables={}, port=80):
                               name=service_name,
                               network=network,
                               environment=env_variables,
-                              ports = {port: 80}
+                              # ports = {port: 80},
                               mem_limit='200m',
                               cpu_period=1000000,
                               cpu_quota=100000)
