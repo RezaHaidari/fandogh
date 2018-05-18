@@ -1,25 +1,40 @@
 from os import path
 
+import kubernetes
 import yaml
-
+import logging
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
+from service.models import Service
+
+logger = logging.getLogger("docker.deploy")
 from image.template_renderer import render_deployment_template, render_service_template, render_ingress_template
 
 config.load_kube_config()
+k8s_beta = client.ExtensionsV1beta1Api()
+k8s_v1 = client.CoreV1Api()
 
 
-def main():
-    # Configs can be set in Configuration class directly or using helper
-    # utility. If no argument provided, the config will be loaded from
-    # default location.
-    context = {'service_name': 'hello', 'service_port': '8080', 'image_name': 'hello', 'image_version': 'v1'}
+def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
+    if not service_name:
+        service_name = '-'.join([image_name, version])
+    logger.debug("Deploying {}@{} as {} for {} user with these variables: {}"
+                 .format(image_name,
+                         version,
+                         service_name,
+                         owner,
+                         env_variables))
+
+    context = {'service_name': service_name,
+               'service_port': port,
+               'image_name': image_name,
+               'image_version': version}
+    Service.objects.filter(name=service_name).update(state='SHUTDOWN')
     deployment_template = render_deployment_template(context)
-    print(deployment_template)
+
     dep = yaml.load(deployment_template)
-    k8s_beta = client.ExtensionsV1beta1Api()
-    k8s_v1 = client.CoreV1Api()
+
     try:
         deployment = k8s_beta.read_namespaced_deployment(namespace='default', name='hello')
         print(deployment)
@@ -47,6 +62,36 @@ def main():
     except ApiException as e:
         resp = k8s_beta.patch_namespaced_ingress('hello-ingress', namespace='default', body=ingress)
     print("Ingress created. status='%s'" % str(resp.status))
+    service = Service(container_id='TODO:REMOVE', name=service_name, state='RUNNING', owner=owner)
+    service.save()
+    return service
+
+
+def destory(service_name, owner):
+    logger.info("Destroying {}".format(service_name))
+    running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
+
+    if running_services:
+        logger.info("There was {} services running for {}".format(len(running_services), service_name))
+        for service in running_services:
+            try:
+                logger.info("removing service for {}".format(service_name))
+                body = kubernetes.client.V1DeleteOptions()
+                k8s_beta.delete_namespaced_deployment(namespace='default', name=service_name, body=body)
+                logger.info("removing deployment for {}".format(service_name))
+                k8s_v1.delete_namespaced_service(namespace='default', name=service_name, body=body)
+                logger.info("removing service for {}".format(service_name))
+                k8s_beta.delete_namespaced_ingress(namespace='default', name=service_name, body=body)
+                logger.info("removing ingress for {}".format(service_name))
+
+            except ApiException as e:
+                logger.error("Error while destroying service {}: {}".format(service_name, e))
+            service.state = 'SHUTDOWN'
+            service.save()
+        return True
+    else:
+        logger.info("There was no container running for {}".format(service_name))
+        return False
 
 
 if __name__ == '__main__':
