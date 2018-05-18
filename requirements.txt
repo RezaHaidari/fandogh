@@ -5,3 +5,4 @@ djangorestframework-jwt
 gunicorn
 kubernetes
 django-cors-headers
+jinja2
