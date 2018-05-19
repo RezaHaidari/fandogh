@@ -21,7 +21,7 @@ Production environment use syslog protocol and send log messages to `/dev/log` o
 #### Rsyslog configuration
 ```
 $template TAG_BASE_NAMING,"/var/log/roozame/fandogh.%syslogtag%.log
-local0.*;local1.*;local2.*;local3.*;local4.*;local5.*;local6.*  ?TAG_BASE_NAMING
+local3.*  ?TAG_BASE_NAMING
 ```
 Also apply these configurations for logrotate:
 ```
