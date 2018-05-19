@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
@@ -40,11 +41,14 @@ class ImageVersionView(APIView):
         # TODO: authenticate user
         # TODO: validate version
         version = request.data.get('version', None)
-        if version:
-            app_version = ImageVersion(image_id=image_name, version=version, source=source_file)
-            app_version.save()
-            trigger_image_building(app_version)
-            return Response("Version created successfully")
+        try:
+            if version:
+                app_version = ImageVersion(image_id=image_name, version=version, source=source_file)
+                app_version.save()
+                trigger_image_building(app_version)
+                return Response("Version created successfully")
+        except IntegrityError:
+            return Response("Image not found", status=404)
         return Response("version is necessary", status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, image_name):
