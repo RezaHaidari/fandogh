@@ -9,11 +9,19 @@ from docker.errors import BuildError, APIError
 from docker.utils.json_stream import json_stream
 from image.models import ImageBuild
 import logging
+import os
 
 logger = logging.getLogger("docker.commands")
-
+# os.environ['DOCKER_TLS_VERIFY='] = '1'
+# os.environ['DOCKER_HOST'] = 'tcp://192.168.99.100:2376'
+# os.environ['DOCKER_CERT_PATH'] = '/Users/SOROOSH/.minikube/certs'
+os.environ['DOCKER_API_VERSION='] = '1.23'
 executor = ThreadPoolExecutor(4)
+# client = docker.from_env(version='1.23')
 client = docker.from_env()
+
+
+# client = docker.APIClient('tcp://192.168.99.100:2376')
 
 
 def trigger_image_building(version):

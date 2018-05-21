@@ -36,9 +36,9 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
     dep = yaml.load(deployment_template)
 
     try:
-        deployment = k8s_beta.read_namespaced_deployment(namespace='default', name='hello')
+        deployment = k8s_beta.read_namespaced_deployment(namespace='default', name=service_name)
         print(deployment)
-        resp = k8s_beta.patch_namespaced_deployment('hello',
+        resp = k8s_beta.patch_namespaced_deployment(service_name,
                                                     body=dep, namespace='default')
     except ApiException as e:
         resp = k8s_beta.create_namespaced_deployment(
@@ -52,7 +52,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
         print(service_template)
         resp = k8s_v1.create_namespaced_service(body=service, namespace='default')
     except ApiException as e:
-        resp = k8s_v1.patch_namespaced_service('hello', body=service, namespace='default')
+        resp = k8s_v1.patch_namespaced_service(service_name, body=service, namespace='default')
     print("Service created. status='%s'" % str(resp.status))
 
     ingress_template = render_ingress_template(context)
@@ -60,14 +60,14 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
     try:
         resp = k8s_beta.create_namespaced_ingress(namespace='default', body=ingress)
     except ApiException as e:
-        resp = k8s_beta.patch_namespaced_ingress('hello-ingress', namespace='default', body=ingress)
+        resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace='default', body=ingress)
     print("Ingress created. status='%s'" % str(resp.status))
     service = Service(container_id='TODO:REMOVE', name=service_name, state='RUNNING', owner=owner)
     service.save()
     return service
 
 
-def destory(service_name, owner):
+def destroy(service_name, owner):
     logger.info("Destroying {}".format(service_name))
     running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
 
@@ -93,6 +93,5 @@ def destory(service_name, owner):
         logger.info("There was no container running for {}".format(service_name))
         return False
 
-
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

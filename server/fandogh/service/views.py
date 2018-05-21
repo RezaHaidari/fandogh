@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 #
-from image.image_deployer import deploy, logs, destroy
+from image.image_deployer import logs
+from image.k8s_deployer import deploy, destroy
 from image.models import ImageVersion
 from user.util import ClientInfo
 from .serializers import *

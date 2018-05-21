@@ -6,9 +6,7 @@ metadata:
   name: {{service_name}}
 spec:
   ports:
-    # The port that this service should serve on.
-    - port: 8080
-  # Label keys and values that must match in order to receive traffic for this service.
+    - port: {{service_port}}
   selector:
     app: {{service_name}}
   type: LoadBalancer
