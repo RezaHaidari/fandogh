@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{service_name}}-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  backend:
+    serviceName: {{service_name}}
+    servicePort: {{service_port}}
+  rules:
+  - host: '{{service_name}}.fandogh.cloud'
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{service_name}}
+          servicePort: {{service_port}}
