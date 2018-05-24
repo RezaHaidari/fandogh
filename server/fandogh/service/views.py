@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 #
-from image.image_deployer import logs
-from image.k8s_deployer import deploy, destroy
+from image.k8s_deployer import deploy, destroy, logs
 from image.models import ImageVersion
 from user.util import ClientInfo
 from .serializers import *
@@ -40,7 +39,8 @@ class ServiceListView(APIView):
                     "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
                     status=status.HTTP_400_BAD_REQUEST)
 
-            version = ImageVersion.objects.filter(image__name=image_name, version=image_version, image__owner=client.user).first()
+            version = ImageVersion.objects.filter(image__name=image_name, version=image_version,
+                                                  image__owner=client.user).first()
             if version:
                 if version.state == 'BUILT':
                     service = deploy(image_name, image_version, service_name, client.user, env_variables, port)
