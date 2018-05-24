@@ -101,7 +101,7 @@ def logs(service_name, namespace='default'):
     for pod in service_list.items:
         print('pod is ')
         print(pod)
-        pod_log = k8s_v1.read_namespaced_pod_log(service_name, pod.metadata.name)
+        pod_log = k8s_v1.read_namespaced_pod_log(pod.metadata.name,namespace)
         result += pod_log
 
     return result
