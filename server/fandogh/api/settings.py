@@ -28,7 +28,7 @@ SECRET_KEY = 'x@*ete5c86cse&$h_kwbowgdtj(dnkn4p-a)%xpf4&u83c%%l9'
 DEBUG = True
 APPEND_SLASH = False
 
-ALLOWED_HOSTS = ['fandogh.cloud', 'localhost']
+ALLOWED_HOSTS = ['fandogh.cloud', 'localhost','*']
 
 # Application definition
 
