@@ -81,7 +81,7 @@ def destroy(service_name, owner):
                 logger.info("removing deployment for {}".format(service_name))
                 k8s_v1.delete_namespaced_service(namespace='default', name=service_name, body=body)
                 logger.info("removing service for {}".format(service_name))
-                k8s_beta.delete_namespaced_ingress(namespace='default', name=service_name, body=body)
+                k8s_beta.delete_namespaced_ingress(namespace='default', name=service_name + '-ingress', body=body)
                 logger.info("removing ingress for {}".format(service_name))
 
             except ApiException as e:
@@ -101,7 +101,7 @@ def logs(service_name, namespace='default'):
     for pod in service_list.items:
         print('pod is ')
         print(pod)
-        pod_log = k8s_v1.read_namespaced_pod_log(pod.metadata.name,namespace)
+        pod_log = k8s_v1.read_namespaced_pod_log(pod.metadata.name, namespace)
         result += pod_log
 
     return result
