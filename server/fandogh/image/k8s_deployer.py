@@ -7,9 +7,10 @@ from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
 from service.models import Service
+from user.models import Namespace
 
 logger = logging.getLogger("docker.deploy")
-from image.template_renderer import render_deployment_template, render_service_template, render_ingress_template
+from image.template_renderer import render_deployment_template, render_service_template, render_ingress_template, render_namespace_template
 
 config.load_kube_config()
 k8s_beta = client.ExtensionsV1beta1Api()
@@ -25,25 +26,33 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
                          service_name,
                          owner,
                          env_variables))
-
+    namespace = getattr(owner, 'nemspace', Namespace(name='soroosh'))
     context = {'service_name': service_name,
                'service_port': port,
                'image_name': image_name,
                'image_version': version,
-               'env_variables': env_variables}
+               'env_variables': env_variables,
+               'namespace': namespace.name}
     Service.objects.filter(name=service_name).update(state='SHUTDOWN')
-    deployment_template = render_deployment_template(context)
-
-    dep = yaml.load(deployment_template)
 
     try:
-        deployment = k8s_beta.read_namespaced_deployment(namespace='default', name=service_name)
+        namespace_template = render_namespace_template(context)
+        ns = yaml.load(namespace_template)
+        create_response = k8s_v1.create_namespace(body=ns)
+        print(create_response)
+    except Exception as e:
+        print(e)
+
+    try:
+        deployment_template = render_deployment_template(context)
+        dep = yaml.load(deployment_template)
+        deployment = k8s_beta.read_namespaced_deployment(namespace=namespace.name, name=service_name)
         print(deployment)
         resp = k8s_beta.patch_namespaced_deployment(service_name,
-                                                    body=dep, namespace='default')
+                                                    body=dep, namespace=namespace.name)
     except ApiException as e:
         resp = k8s_beta.create_namespaced_deployment(
-            body=dep, namespace='default')
+            body=dep, namespace=namespace.name)
 
     print("Deployment created. status='%s'" % str(resp.status))
 
@@ -51,17 +60,17 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
         service_template = render_service_template(context)
         service = yaml.load(service_template)
         print(service_template)
-        resp = k8s_v1.create_namespaced_service(body=service, namespace='default')
+        resp = k8s_v1.create_namespaced_service(body=service, namespace=namespace.name)
     except ApiException as e:
-        resp = k8s_v1.patch_namespaced_service(service_name, body=service, namespace='default')
+        resp = k8s_v1.patch_namespaced_service(service_name, body=service, namespace=namespace.name)
     print("Service created. status='%s'" % str(resp.status))
 
     ingress_template = render_ingress_template(context)
     ingress = yaml.load(ingress_template)
     try:
-        resp = k8s_beta.create_namespaced_ingress(namespace='default', body=ingress)
+        resp = k8s_beta.create_namespaced_ingress(namespace=namespace.name, body=ingress)
     except ApiException as e:
-        resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace='default', body=ingress)
+        resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name, body=ingress)
     print("Ingress created. status='%s'" % str(resp.status))
     service = Service(container_id='TODO:REMOVE', name=service_name, state='RUNNING', owner=owner)
     service.save()
@@ -71,6 +80,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
 def destroy(service_name, owner):
     logger.info("Destroying {}".format(service_name))
     running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
+    namespace = getattr(owner, 'nemspace', Namespace(name='soroosh'))
 
     if running_services:
         logger.info("There was {} services running for {}".format(len(running_services), service_name))
@@ -78,11 +88,11 @@ def destroy(service_name, owner):
             try:
                 logger.info("removing service for {}".format(service_name))
                 body = kubernetes.client.V1DeleteOptions()
-                k8s_beta.delete_namespaced_deployment(namespace='default', name=service_name, body=body)
+                k8s_beta.delete_namespaced_deployment(namespace=namespace.name, name=service_name, body=body)
                 logger.info("removing deployment for {}".format(service_name))
-                k8s_v1.delete_namespaced_service(namespace='default', name=service_name, body=body)
+                k8s_v1.delete_namespaced_service(namespace=namespace.name, name=service_name, body=body)
                 logger.info("removing service for {}".format(service_name))
-                k8s_beta.delete_namespaced_ingress(namespace='default', name=service_name + '-ingress', body=body)
+                k8s_beta.delete_namespaced_ingress(namespace=namespace.name, name=service_name + '-ingress', body=body)
                 logger.info("removing ingress for {}".format(service_name))
 
             except ApiException as e:
