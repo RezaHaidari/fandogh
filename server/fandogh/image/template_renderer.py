@@ -6,9 +6,14 @@ env = Environment(
     loader=FileSystemLoader(os.path.join(BASE_DIR, 'media', 'templates'))
 )
 
+namespace_template = env.get_template('namespace_template.yml')
 deployment_template = env.get_template('deployment_template.yml')
 service_template = env.get_template('service_template.yml')
 ingress_template = env.get_template('ingress_template.yml')
+
+
+def render_namespace_template(context):
+    return namespace_template.render(context)
 
 
 def render_deployment_template(context):
