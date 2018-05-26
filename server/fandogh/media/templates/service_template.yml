@@ -9,4 +9,4 @@ spec:
     - port: {{service_port}}
   selector:
     app: {{service_name}}
-  type: LoadBalancer
+  type: ClusterIP
