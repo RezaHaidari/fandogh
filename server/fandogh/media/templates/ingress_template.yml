@@ -9,7 +9,11 @@ spec:
     serviceName: {{service_name}}
     servicePort: {{service_port}}
   rules:
+  {% if namespace == 'default' %}
   - host: '{{service_name}}.fandogh.cloud'
+  {% else %}
+  - host: '{{service_name}}.{{namespace}}.fandogh.cloud'
+  {% endif %}
     http:
       paths:
       - path: /
