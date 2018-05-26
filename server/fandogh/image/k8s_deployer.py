@@ -29,7 +29,8 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
     context = {'service_name': service_name,
                'service_port': port,
                'image_name': image_name,
-               'image_version': version}
+               'image_version': version,
+               'env_variables': env_variables}
     Service.objects.filter(name=service_name).update(state='SHUTDOWN')
     deployment_template = render_deployment_template(context)
 

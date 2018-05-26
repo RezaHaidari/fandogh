@@ -14,3 +14,10 @@ spec:
         image: {{image_name}}:{{image_version}}
         ports:
           - containerPort: {{service_port}}
+        env:
+        - name: SERVICE_NAME
+          value: {{service_name}}
+          {% for key in env_variables %}
+        - name: {{key}}
+          value: {{env_variables[key]}}
+          {% endfor %}
