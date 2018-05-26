@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from service.models import Service
+from user.models import DEFAULT_NAMESPACE
 
 
 class ServiceSerializer(serializers.Serializer):
@@ -21,7 +22,11 @@ class ContainerSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
-        return 'http://%s.fandogh.cloud' % obj.name
+        namespace = getattr(obj.owner, 'nemspace', DEFAULT_NAMESPACE)
+        if namespace.name == 'default':
+            return 'http://%s.fandogh.cloud' % (obj.name)
+        else:
+            return 'http://%s.%s.fandogh.cloud' % (obj.name, namespace.name)
 
     class Meta:
         model = Service

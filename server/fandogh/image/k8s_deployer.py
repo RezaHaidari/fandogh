@@ -7,7 +7,7 @@ from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
 from service.models import Service
-from user.models import Namespace
+from user.models import DEFAULT_NAMESPACE
 
 logger = logging.getLogger("docker.deploy")
 from image.template_renderer import render_deployment_template, render_service_template, render_ingress_template, render_namespace_template
@@ -26,7 +26,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
                          service_name,
                          owner,
                          env_variables))
-    namespace = getattr(owner, 'nemspace', Namespace(name='soroosh'))
+    namespace = getattr(owner, 'nemspace', DEFAULT_NAMESPACE)
     context = {'service_name': service_name,
                'service_port': port,
                'image_name': image_name,
@@ -80,7 +80,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
 def destroy(service_name, owner):
     logger.info("Destroying {}".format(service_name))
     running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
-    namespace = getattr(owner, 'nemspace', Namespace(name='soroosh'))
+    namespace = getattr(owner, 'nemspace', DEFAULT_NAMESPACE)
 
     if running_services:
         logger.info("There was {} services running for {}".format(len(running_services), service_name))

@@ -11,3 +11,6 @@ class Namespace(models.Model):
     name = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.OneToOneField(to=User, related_name='namespace', on_delete=models.CASCADE)
+
+
+DEFAULT_NAMESPACE = Namespace(name='default')
