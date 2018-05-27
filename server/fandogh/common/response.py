@@ -28,5 +28,5 @@ class ErrorResponse(Response):
             Response.__init__(self, payload, status, template_name, headers, exception, content_type)
         except Exception as e:
             error_logger.error("Error %s occured in ErrorResponse" % e)
-            payload = {"message": ""}
+            payload = {"message": data}
             Response.__init__(self, payload, status, template_name, headers, exception, content_type)

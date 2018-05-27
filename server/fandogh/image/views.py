@@ -4,6 +4,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from common.response import ErrorResponse
 from image.image_builder import trigger_image_building
 from image.models import ImageVersion, Image
 from image.serializers import ImageSerializer, ImageVersionSerializer, ImmageBuildSerializer
@@ -38,11 +39,24 @@ class ImageVersionView(APIView):
 
     def post(self, request, image_name):
         source_file = request.FILES.get('source', None)
-        # TODO: authenticate user
-        # TODO: validate version
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        try:
+            image = Image.objects.get(name=image_name)
+            if image.owner.username != client.user.username:
+                return ErrorResponse("You cannot publish version for this image", status=status.HTTP_403_FORBIDDEN)
+
+        except Image.DoesNotExist as e:
+            return ErrorResponse("Image with this name: {} does not exist".format(image_name), status=status.HTTP_404_NOT_FOUND)
+
         version = request.data.get('version', None)
         try:
             if version:
+                existing_version = ImageVersion.objects.filter(image_id=image_name, version=version).first()
+                if existing_version and existing_version.state == 'BUILT':
+                    return ErrorResponse("You already have a successful image built with version:{} for image:{} ".format(version, image_name), status=status.HTTP_400_BAD_REQUEST)
+
                 app_version = ImageVersion(image_id=image_name, version=version, source=source_file)
                 app_version.save()
                 trigger_image_building(app_version)
@@ -52,7 +66,10 @@ class ImageVersionView(APIView):
         return Response("version is necessary", status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, image_name):
-        if Image.objects.filter(name=image_name).exists():
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        if Image.objects.filter(name=image_name, owner=client.user).exists():
             versions = ImageVersion.objects.filter(image=image_name)
             data = ImageVersionSerializer(instance=versions, many=True).data
             return Response(data)
