@@ -22,7 +22,7 @@ class ContainerSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
 
     def get_url(self, obj):
-        namespace = getattr(obj.owner, 'nemspace', DEFAULT_NAMESPACE)
+        namespace = getattr(obj.owner, 'namespace', DEFAULT_NAMESPACE)
         if namespace.name == 'default':
             return 'http://%s.fandogh.cloud' % (obj.name)
         else:

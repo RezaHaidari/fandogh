@@ -27,6 +27,7 @@ class ServiceListView(APIView):
         serializer = ServiceSerializer(data=request.data)
         if serializer.is_valid():
             image_name = serializer.validated_data['image_name']
+            image_name = client.user.namespace.name + '/' + image_name
             image_version = serializer.validated_data['image_version']
             service_name = serializer.validated_data.get('service_name')
             env_variables = serializer.validated_data.get('environment_variables')

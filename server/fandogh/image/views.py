@@ -27,7 +27,7 @@ class ImageView(APIView):
         request_data = request.data.copy()
         request_data['owner'] = client.user.id
         serializer = ImageSerializer(data=request_data)
-
+        serializer.initial_data['name'] = client.user.namespace.name + '/' + serializer.initial_data['name']
         if serializer.is_valid():
             serializer.save()
             return Response("Image created successfully")
@@ -42,6 +42,8 @@ class ImageVersionView(APIView):
         client = ClientInfo(request)
         if client.is_anonymous():
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+
+        image_name = client.user.namespace.name + '/' + image_name
         try:
             image = Image.objects.get(name=image_name)
             if image.owner.username != client.user.username:
@@ -69,6 +71,7 @@ class ImageVersionView(APIView):
         client = ClientInfo(request)
         if client.is_anonymous():
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        image_name = client.user.namespace.name + '/' + image_name
         if Image.objects.filter(name=image_name, owner=client.user).exists():
             versions = ImageVersion.objects.filter(image=image_name)
             data = ImageVersionSerializer(instance=versions, many=True).data
@@ -82,6 +85,7 @@ class ImageBuildView(APIView):
         if client.is_anonymous():
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
 
+        image_name = client.user.namespace.name + '/' + image_name
         version = ImageVersion.objects.filter(image=image_name, version=image_version, image__owner=client.user).first()
         if not version:
             return Response("Couldn't find the resource", status.HTTP_404_NOT_FOUND)

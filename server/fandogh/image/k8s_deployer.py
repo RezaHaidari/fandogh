@@ -26,7 +26,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
                          service_name,
                          owner,
                          env_variables))
-    namespace = getattr(owner, 'nemspace', DEFAULT_NAMESPACE)
+    namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
     context = {'service_name': service_name,
                'service_port': port,
                'image_name': image_name,
@@ -80,7 +80,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
 def destroy(service_name, owner):
     logger.info("Destroying {}".format(service_name))
     running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
-    namespace = getattr(owner, 'nemspace', DEFAULT_NAMESPACE)
+    namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
 
     if running_services:
         logger.info("There was {} services running for {}".format(len(running_services), service_name))
