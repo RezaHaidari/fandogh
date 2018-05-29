@@ -9,6 +9,10 @@ spec:
       labels:
         app: {{service_name}}
     spec:
+      volumes:
+      - name: pv-storage
+        persistentVolumeClaim:
+          claimName: {{namespace}}-claim
       containers:
       - name: {{service_name}}
         image: {{image_name}}:{{image_version}}
@@ -21,3 +25,6 @@ spec:
         - name: {{key}}
           value: {{env_variables[key]}}
           {% endfor %}
+        volumeMounts:
+        - mountPath: "/mnt/shared-volume"
+          name: pv-storage
