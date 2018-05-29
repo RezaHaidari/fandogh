@@ -10,7 +10,9 @@ from service.models import Service
 from user.models import DEFAULT_NAMESPACE
 
 logger = logging.getLogger("docker.deploy")
-from image.template_renderer import render_deployment_template, render_service_template, render_ingress_template, render_namespace_template
+error_logger = logging.getLogger("error")
+from image.template_renderer import render_deployment_template, render_service_template, render_ingress_template, \
+    render_namespace_template, render_pv_template, render_pvc_template
 
 config.load_kube_config()
 k8s_beta = client.ExtensionsV1beta1Api()
@@ -20,6 +22,8 @@ k8s_v1 = client.CoreV1Api()
 def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
     if not service_name:
         service_name = '-'.join([image_name, version])
+    #  TODO: we probably don't need to do it
+    Service.objects.filter(name=service_name).update(state='SHUTDOWN')
     logger.debug("Deploying {}@{} as {} for {} user with these variables: {}"
                  .format(image_name,
                          version,
@@ -33,15 +37,31 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
                'image_version': version,
                'env_variables': env_variables,
                'namespace': namespace.name}
-    Service.objects.filter(name=service_name).update(state='SHUTDOWN')
 
     try:
         namespace_template = render_namespace_template(context)
         ns = yaml.load(namespace_template)
         create_response = k8s_v1.create_namespace(body=ns)
-        print(create_response)
+        logger.info(create_response)
     except Exception as e:
-        print(e)
+        error_logger.error(e)
+
+    try:
+        pv_template = render_pv_template(context)
+        pv = yaml.load(pv_template)
+        create_response = k8s_v1.create_persistent_volume(body=pv)
+        logger.info(create_response)
+    except Exception as e:
+        error_logger.error(e)
+
+    try:
+        pvc_template = render_pvc_template(context)
+        pvc = yaml.load(pvc_template)
+        create_response = k8s_v1.create_namespaced_persistent_volume_claim(namespace.name, pvc)
+        logger.info(create_response)
+
+    except Exception as e:
+        error_logger.error(e)
 
     try:
         deployment_template = render_deployment_template(context)

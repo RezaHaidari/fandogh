@@ -10,10 +10,20 @@ namespace_template = env.get_template('namespace_template.yml')
 deployment_template = env.get_template('deployment_template.yml')
 service_template = env.get_template('service_template.yml')
 ingress_template = env.get_template('ingress_template.yml')
+pv_template = env.get_template('pv_template.yml')
+pvc_template = env.get_template('pvc_template.yml')
 
 
 def render_namespace_template(context):
     return namespace_template.render(context)
+
+
+def render_pv_template(context):
+    return pv_template.render(context)
+
+
+def render_pvc_template(context):
+    return pvc_template.render(context)
 
 
 def render_deployment_template(context):
