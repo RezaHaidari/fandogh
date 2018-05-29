@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{service_name}}-claim
+  name: {{namespace}}-claim
 spec:
   storageClassName: manual
   accessModes:
@@ -11,4 +11,4 @@ spec:
       storage: 2Gi
   selector:
     matchLabels:
-      service_name: {{service_name}}
+      service_name: {{namespace}}
