@@ -11,4 +11,4 @@ spec:
       storage: 2Gi
   selector:
     matchLabels:
-      service_name: {{namespace}}
+      namespace_name: {{namespace}}
