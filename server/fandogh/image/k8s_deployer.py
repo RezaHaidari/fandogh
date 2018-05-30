@@ -129,7 +129,7 @@ def logs(service_name, owner):
     result = "";
     logger.info("Getting logs of {}".format(service_name))
     namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
-    service_list = k8s_v1.list_namespaced_pod(namespace, label_selector='app=' + service_name)
+    service_list = k8s_v1.list_namespaced_pod(namespace.name, label_selector='app=' + service_name)
     for pod in service_list.items:
         pod_log = k8s_v1.read_namespaced_pod_log(pod.metadata.name, namespace.name)
         result += pod_log
