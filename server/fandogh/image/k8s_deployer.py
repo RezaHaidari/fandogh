@@ -125,14 +125,13 @@ def destroy(service_name, owner):
         return False
 
 
-def logs(service_name, namespace='default'):
+def logs(service_name, owner):
     result = "";
     logger.info("Getting logs of {}".format(service_name))
+    namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
     service_list = k8s_v1.list_namespaced_pod(namespace, label_selector='app=' + service_name)
     for pod in service_list.items:
-        print('pod is ')
-        print(pod)
-        pod_log = k8s_v1.read_namespaced_pod_log(pod.metadata.name, namespace)
+        pod_log = k8s_v1.read_namespaced_pod_log(pod.metadata.name, namespace.name)
         result += pod_log
 
     return result
