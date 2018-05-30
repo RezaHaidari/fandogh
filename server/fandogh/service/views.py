@@ -70,7 +70,10 @@ class ServiceView(APIView):
 
 class ServiceLogView(APIView):
     def get(self, request, service_name):
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
         service = Service.objects.filter(name=service_name).first()
         if not service:
             return Response("Resource not found", status=404)
-        return Response(logs(service.name))
+        return Response(logs(service.name, client.user))
