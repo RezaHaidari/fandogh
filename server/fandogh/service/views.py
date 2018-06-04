@@ -44,14 +44,14 @@ class ServiceListView(APIView):
                                                   image__owner=client.user).first()
             if version:
                 if version.state == 'BUILT':
-                    service = deploy(image_name, image_version, service_name, client.user, env_variables, port)
+                    service_name = deploy(image_name, image_version, service_name, client.user, env_variables, port)
                 else:
                     # TODO: different message for different states
                     return Response('version has not been build successfully.', status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response('Application or version does not exist.', status=status.HTTP_404_NOT_FOUND)
 
-            data = ContainerSerializer(instance=service).data
+            data = service_name
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -16,18 +16,3 @@ class CreatedServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ('name', 'start_date', 'state')
-
-
-class ContainerSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
-
-    def get_url(self, obj):
-        namespace = getattr(obj.owner, 'namespace', DEFAULT_NAMESPACE)
-        if namespace.name == 'default':
-            return 'http://%s.fandogh.cloud' % (obj.name)
-        else:
-            return 'http://%s.%s.fandogh.cloud' % (obj.name, namespace.name)
-
-    class Meta:
-        model = Service
-        fields = ('container_id', 'url',)
