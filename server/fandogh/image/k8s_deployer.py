@@ -1,4 +1,3 @@
-from os import path
 
 import kubernetes
 import yaml
@@ -6,7 +5,6 @@ import logging
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 
-from service.models import Service
 from user.models import DEFAULT_NAMESPACE
 
 logger = logging.getLogger("docker.deploy")
@@ -20,10 +18,6 @@ k8s_v1 = client.CoreV1Api()
 
 
 def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
-    if not service_name:
-        service_name = '-'.join([image_name, version])
-    #  TODO: we probably don't need to do it
-    Service.objects.filter(name=service_name).update(state='SHUTDOWN')
     logger.debug("Deploying {}@{} as {} for {} user with these variables: {}"
                  .format(image_name,
                          version,
@@ -74,16 +68,16 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
         resp = k8s_beta.create_namespaced_deployment(
             body=dep, namespace=namespace.name)
 
-    print("Deployment created. status='%s'" % str(resp.status))
+    logger.info("Deployment created. status='%s'" % str(resp.status))
 
     try:
         service_template = render_service_template(context)
         service = yaml.load(service_template)
-        print(service_template)
+        logger.info(service_template)
         resp = k8s_v1.create_namespaced_service(body=service, namespace=namespace.name)
     except ApiException as e:
         resp = k8s_v1.patch_namespaced_service(service_name, body=service, namespace=namespace.name)
-    print("Service created. status='%s'" % str(resp.status))
+    logger.info("Service created. status='%s'" % str(resp.status))
 
     ingress_template = render_ingress_template(context)
     ingress = yaml.load(ingress_template)
@@ -92,37 +86,23 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
     except ApiException as e:
         resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name, body=ingress)
     print("Ingress created. status='%s'" % str(resp.status))
-    service = Service(container_id='TODO:REMOVE', name=service_name, state='RUNNING', owner=owner)
-    service.save()
-    return service
+    return service_name
 
 
 def destroy(service_name, owner):
     logger.info("Destroying {}".format(service_name))
-    running_services = Service.objects.filter(name=service_name, owner=owner, state='RUNNING').all()
     namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
 
-    if running_services:
-        logger.info("There was {} services running for {}".format(len(running_services), service_name))
-        for service in running_services:
-            try:
-                logger.info("removing service for {}".format(service_name))
-                body = kubernetes.client.V1DeleteOptions()
-                k8s_beta.delete_namespaced_deployment(namespace=namespace.name, name=service_name, body=body)
-                logger.info("removing deployment for {}".format(service_name))
-                k8s_v1.delete_namespaced_service(namespace=namespace.name, name=service_name, body=body)
-                logger.info("removing service for {}".format(service_name))
-                k8s_beta.delete_namespaced_ingress(namespace=namespace.name, name=service_name + '-ingress', body=body)
-                logger.info("removing ingress for {}".format(service_name))
+    logger.info("removing service for {}".format(service_name))
+    body = kubernetes.client.V1DeleteOptions()
+    k8s_beta.delete_namespaced_deployment(namespace=namespace.name, name=service_name, body=body)
+    logger.info("removing deployment for {}".format(service_name))
+    k8s_v1.delete_namespaced_service(namespace=namespace.name, name=service_name, body=body)
+    logger.info("removing service for {}".format(service_name))
+    k8s_beta.delete_namespaced_ingress(namespace=namespace.name, name=service_name + '-ingress', body=body)
+    logger.info("removing ingress for {}".format(service_name))
 
-            except ApiException as e:
-                logger.error("Error while destroying service {}: {}".format(service_name, e))
-            service.state = 'SHUTDOWN'
-            service.save()
-        return True
-    else:
-        logger.info("There was no container running for {}".format(service_name))
-        return False
+    return True
 
 
 def logs(service_name, owner):
