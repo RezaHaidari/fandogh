@@ -3,8 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-#
-from image.k8s_deployer import deploy, destroy, logs
+from image.k8s_deployer import deploy, destroy, logs, get_services
 from image.models import ImageVersion
 from user.util import ClientInfo
 from .serializers import *
@@ -15,10 +14,9 @@ class ServiceListView(APIView):
         client = ClientInfo(request)
         if client.is_anonymous():
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        data = get_services(client.user)
 
-        services = Service.objects.filter(owner=client.user.id).all()
-        data = CreatedServiceSerializer(instance=services, many=True).data
-        return Response(data)
+        return Response(ServiceResponseSerializer(instance=data, many=True).data)
 
     def post(self, request):
         client = ClientInfo(request)

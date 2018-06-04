@@ -13,11 +13,14 @@ class ServiceSerializer(serializers.Serializer):
 
 class ServiceResponseSerializer(serializers.Serializer):
     url = serializers.SerializerMethodField()
+    name = serializers.CharField()
+    start_date = serializers.CharField()
+    state = serializers.CharField()
 
     def get_url(self, ctx):
         namespace = ctx.get('namespace', DEFAULT_NAMESPACE)
-        service_name = ctx.get('service_name')
+        name = ctx.get('name')
         if namespace.name == 'default':
-            return 'http://%s.fandogh.cloud' % service_name
+            return 'http://%s.fandogh.cloud' % name
         else:
-            return 'http://%s.%s.fandogh.cloud' % (service_name, namespace.name)
+            return 'http://%s.%s.fandogh.cloud' % (name, namespace.name)

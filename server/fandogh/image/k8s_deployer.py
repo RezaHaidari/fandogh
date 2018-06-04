@@ -1,4 +1,3 @@
-
 import kubernetes
 import yaml
 import logging
@@ -15,6 +14,25 @@ from image.template_renderer import render_deployment_template, render_service_t
 config.load_kube_config()
 k8s_beta = client.ExtensionsV1beta1Api()
 k8s_v1 = client.CoreV1Api()
+
+
+def get_services(owner):
+    namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
+    logger.debug("Getting services of namespace {}"
+                 .format(namespace.name))
+
+    namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
+
+    service_list = k8s_v1.list_namespaced_service(namespace.name)
+    result = []
+    for item in service_list.items:
+        print(item)
+        print(item.metadata.name)
+        result.append({'name': item.metadata.name,
+                       'namespace': namespace,
+                       'start_date': item.metadata.creation_timestamp,
+                       'state': 'RUNNING'})
+    return result
 
 
 def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
