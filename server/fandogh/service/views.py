@@ -51,7 +51,7 @@ class ServiceListView(APIView):
             else:
                 return Response('Application or version does not exist.', status=status.HTTP_404_NOT_FOUND)
 
-            data = service_name
+            data = ServiceResponseSerializer(instance={'service_name': service_name, 'namespace': client.user.namespace}).data
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
