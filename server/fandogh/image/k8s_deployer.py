@@ -114,7 +114,7 @@ def destroy(service_name, owner):
     logger.info("Destroying {}".format(service_name))
     namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
     user_services = get_services(owner)
-    service_exists = len(filter(lambda s: s.get('name', None) == service_name, user_services))
+    service_exists = len(list(filter(lambda s: s.get('name', None) == service_name, user_services)))
 
     if service_exists:
         logger.info("removing service for {}".format(service_name))
