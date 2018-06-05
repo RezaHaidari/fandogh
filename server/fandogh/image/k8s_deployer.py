@@ -92,10 +92,10 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
         service_template = render_service_template(context)
         service = yaml.load(service_template)
         logger.info(service_template)
-        resp = k8s_v1.create_namespaced_service(body=service, namespace=namespace.name)
+        service_resp = k8s_v1.create_namespaced_service(body=service, namespace=namespace.name)
     except ApiException as e:
-        resp = k8s_v1.patch_namespaced_service(service_name, body=service, namespace=namespace.name)
-    logger.info("Service created. status='%s'" % str(resp.status))
+        service_resp = k8s_v1.patch_namespaced_service(service_name, body=service, namespace=namespace.name)
+    logger.info("Service created. status='%s'" % str(service_resp.status))
 
     ingress_template = render_ingress_template(context)
     ingress = yaml.load(ingress_template)
@@ -104,7 +104,10 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
     except ApiException as e:
         resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name, body=ingress)
     print("Ingress created. status='%s'" % str(resp.status))
-    return service_name
+    return {'name': service_resp.metadata.name,
+            'namespace': namespace,
+            'start_date': service_resp.metadata.creation_timestamp,
+            'state': 'RUNNING'}
 
 
 def destroy(service_name, owner):
