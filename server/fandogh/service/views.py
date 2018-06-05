@@ -48,7 +48,8 @@ class ServiceListView(APIView):
             else:
                 return Response('Application or version does not exist.', status=status.HTTP_404_NOT_FOUND)
 
-            data = ServiceResponseSerializer(instance={'service_name': service_name, 'namespace': client.user.namespace}).data
+            data = ServiceResponseSerializer(
+                instance={'service_name': service_name, 'namespace': client.user.namespace}).data
             return Response(data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -70,7 +71,5 @@ class ServiceLogView(APIView):
         client = ClientInfo(request)
         if client.is_anonymous():
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
-        service = Service.objects.filter(name=service_name).first()
-        if not service:
-            return Response("Resource not found", status=404)
-        return Response(logs(service.name, client.user))
+
+        return Response(logs(service_name, client.user))
