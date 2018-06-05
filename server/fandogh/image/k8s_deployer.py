@@ -110,17 +110,21 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
 def destroy(service_name, owner):
     logger.info("Destroying {}".format(service_name))
     namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
+    user_services = get_services(owner)
+    service_exists = len(filter(lambda s: s.get('name', None) == service_name, user_services))
 
-    logger.info("removing service for {}".format(service_name))
-    body = kubernetes.client.V1DeleteOptions()
-    k8s_beta.delete_namespaced_deployment(namespace=namespace.name, name=service_name, body=body)
-    logger.info("removing deployment for {}".format(service_name))
-    k8s_v1.delete_namespaced_service(namespace=namespace.name, name=service_name, body=body)
-    logger.info("removing service for {}".format(service_name))
-    k8s_beta.delete_namespaced_ingress(namespace=namespace.name, name=service_name + '-ingress', body=body)
-    logger.info("removing ingress for {}".format(service_name))
-
-    return True
+    if service_exists:
+        logger.info("removing service for {}".format(service_name))
+        body = kubernetes.client.V1DeleteOptions()
+        k8s_beta.delete_namespaced_deployment(namespace=namespace.name, name=service_name, body=body)
+        logger.info("removing deployment for {}".format(service_name))
+        k8s_v1.delete_namespaced_service(namespace=namespace.name, name=service_name, body=body)
+        logger.info("removing service for {}".format(service_name))
+        k8s_beta.delete_namespaced_ingress(namespace=namespace.name, name=service_name + '-ingress', body=body)
+        logger.info("removing ingress for {}".format(service_name))
+        return True
+    else:
+        return False
 
 
 def logs(service_name, owner):
