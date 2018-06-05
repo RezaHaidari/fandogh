@@ -30,8 +30,7 @@ class ServiceListView(APIView):
             service_name = serializer.validated_data.get('service_name')
             env_variables = serializer.validated_data.get('environment_variables')
             port = serializer.validated_data.get('port', 80)
-            running_services = Service.objects.filter(owner=client.user, state='RUNNING').exclude(
-                name=service_name).all()
+            running_services = get_services(client.user)
             # TODO: a quick check for releasing alpha version
             if len(running_services) > 1 and client.user.username != 'soroosh@yahoo.com':
                 return Response(
