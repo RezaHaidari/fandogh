@@ -28,3 +28,7 @@ spec:
         volumeMounts:
         - mountPath: "/mnt/shared-volume"
           name: pv-storage
+        resources:
+          limits:
+            cpu: 0.2
+            memory: 2Mi
