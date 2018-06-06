@@ -109,5 +109,9 @@ class IngressUnit(StackUnit):
 
 
 class DeploymentStack(object):
-    def deploy(self):
-        pass
+    def __init__(self, units):
+        self.units = units
+
+    def deploy(self, context):
+        for unit in self.units:
+            unit.deploy(context)
