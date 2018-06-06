@@ -113,5 +113,24 @@ class DeploymentStack(object):
         self.units = units
 
     def deploy(self, context):
+        # TODO: log and error handling
         for unit in self.units:
             unit.deploy(context)
+
+
+init_stack = DeploymentStack([
+    NamespaceUnit('namespace_template.yml'),
+    VolumeUnit('pv_template.yml'),
+    VolumeClaimUnit('pvc_template.yml')
+])
+
+internal_stack = DeploymentStack([
+    DeploymentUnit('deployment_template.yml', k8s_v1, k8s_beta),
+    ServiceUnit('service_template.yml', k8s_v1, k8s_beta),
+])
+
+external_stack = DeploymentStack([
+    DeploymentUnit('deployment_template.yml', k8s_v1, k8s_beta),
+    ServiceUnit('service_template.yml', k8s_v1, k8s_beta),
+    IngressUnit('ingress_template.yml', k8s_v1, k8s_beta)
+])
