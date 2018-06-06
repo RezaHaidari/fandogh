@@ -3,6 +3,7 @@ from jinja2 import Environment, FileSystemLoader
 import yaml
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
+import logging
 
 config.load_kube_config()
 k8s_beta = client.ExtensionsV1beta1Api()
@@ -12,6 +13,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = Environment(
     loader=FileSystemLoader(os.path.join(BASE_DIR, 'media', 'templates'))
 )
+
+logger = logging.getLogger("docker.deploy")
+error_logger = logging.getLogger("error")
 
 
 class StackUnit(object):
@@ -31,18 +35,34 @@ class StackUnit(object):
 
 
 class DeploymentUnit(StackUnit):
-
     def apply(self, context, request_body):
         try:
             namespace = context.get('namespace')
             service_name = context.get('service_name')
-            deployment = self.k8s_beta.read_namespaced_deployment(namespace=namespace, name=service_name)
+            self.k8s_beta.read_namespaced_deployment(namespace=namespace, name=service_name)
             resp = k8s_beta.patch_namespaced_deployment(service_name,
                                                         body=request_body, namespace=namespace)
-
+            logger.info(resp)
         except ApiException as e:
+            error_logger.error(e)
             resp = k8s_beta.create_namespaced_deployment(
                 body=request_body, namespace=namespace)
+            logger.info(resp)
+        return resp
+
+
+class ServiceUnit(StackUnit):
+    def apply(self, context, request_body):
+        try:
+            namespace = context.get('namespace')
+            service_name = context.get('service_name')
+            resp = k8s_v1.create_namespaced_service(body=request_body, namespace=namespace)
+            logger.info(resp)
+        except ApiException as e:
+            error_logger.error(e)
+            resp = k8s_v1.patch_namespaced_service(service_name, body=request_body, namespace=namespace)
+            logger.info(resp)
+        return resp
 
 
 class DeploymentStack(object):
