@@ -65,6 +65,19 @@ class ServiceUnit(StackUnit):
         return resp
 
 
+class IngressUnit(StackUnit):
+    def apply(self, context, request_body):
+        try:
+            namespace = context.get('namespace')
+            service_name = context.get('service_name')
+            resp = k8s_beta.create_namespaced_ingress(namespace=namespace, body=request_body)
+        except ApiException as e:
+            resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name,
+                                                     body=request_body)
+        return resp
+
+
+
 class DeploymentStack(object):
     def deploy(self):
         pass
