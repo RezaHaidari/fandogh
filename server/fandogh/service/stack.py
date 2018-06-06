@@ -28,6 +28,21 @@ class StackUnit(object):
         self.__apply(context, rendered_template)
 
 
+class DeploymentUnit(StackUnit):
+
+    def apply(self, context, request_body):
+        try:
+            namespace = context.get('namespace')
+            service_name = context.get('service_name')
+            deployment = self.k8s_beta.read_namespaced_deployment(namespace=namespace, name=service_name)
+            resp = k8s_beta.patch_namespaced_deployment(service_name,
+                                                        body=request_body, namespace=namespace)
+
+        except ApiException as e:
+            resp = k8s_beta.create_namespaced_deployment(
+                body=request_body, namespace=namespace)
+
+
 class DeploymentStack(object):
     def deploy(self):
         pass
