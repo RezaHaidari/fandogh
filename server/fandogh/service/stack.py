@@ -44,6 +44,15 @@ class NamespaceUnit(StackUnit):
             error_logger.error(e)
 
 
+class VolumeUnit(StackUnit):
+    def apply(self, context, request_body):
+        try:
+            resp = k8s_v1.create_persistent_volume(body=request_body)
+            logger.info(resp)
+            return resp
+        except Exception as e:
+            error_logger.error(e)
+
 
 class DeploymentUnit(StackUnit):
     def apply(self, context, request_body):
