@@ -34,6 +34,17 @@ class StackUnit(object):
         self.__apply(context, request_body)
 
 
+class NamespaceUnit(StackUnit):
+    def apply(self, context, request_body):
+        try:
+            resp = k8s_v1.create_namespace(body=request_body)
+            logger.info(resp)
+            return resp
+        except Exception as e:
+            error_logger.error(e)
+
+
+
 class DeploymentUnit(StackUnit):
     def apply(self, context, request_body):
         try:
@@ -75,7 +86,6 @@ class IngressUnit(StackUnit):
             resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name,
                                                      body=request_body)
         return resp
-
 
 
 class DeploymentStack(object):
