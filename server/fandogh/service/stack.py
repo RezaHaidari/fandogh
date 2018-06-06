@@ -34,37 +34,6 @@ class StackUnit(object):
         self.__apply(context, request_body)
 
 
-class NamespaceUnit(StackUnit):
-    def apply(self, context, request_body):
-        try:
-            resp = k8s_v1.create_namespace(body=request_body)
-            logger.info(resp)
-            return resp
-        except Exception as e:
-            error_logger.error(e)
-
-
-class VolumeUnit(StackUnit):
-    def apply(self, context, request_body):
-        try:
-            resp = k8s_v1.create_persistent_volume(body=request_body)
-            logger.info(resp)
-            return resp
-        except Exception as e:
-            error_logger.error(e)
-
-
-class VolumeClaimUnit(StackUnit):
-    def apply(self, context, request_body):
-        try:
-            namespace = context.get('namespace')
-            resp = k8s_v1.create_namespaced_persistent_volume_claim(namespace, request_body)
-            logger.info(resp)
-            return resp
-        except Exception as e:
-            error_logger.error(e)
-
-
 class DeploymentUnit(StackUnit):
     def apply(self, context, request_body):
         try:
@@ -96,56 +65,6 @@ class ServiceUnit(StackUnit):
         return resp
 
 
-class IngressUnit(StackUnit):
-    def apply(self, context, request_body):
-        try:
-            namespace = context.get('namespace')
-            service_name = context.get('service_name')
-            resp = k8s_beta.create_namespaced_ingress(namespace=namespace, body=request_body)
-        except ApiException as e:
-            resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name,
-                                                     body=request_body)
-        return resp
-
-
-class DeploymentUnit(StackUnit):
-
-    def apply(self, context, request_body):
-        try:
-            namespace = context.get('namespace')
-            service_name = context.get('service_name')
-            deployment = self.k8s_beta.read_namespaced_deployment(namespace=namespace, name=service_name)
-            resp = k8s_beta.patch_namespaced_deployment(service_name,
-                                                        body=request_body, namespace=namespace)
-
-        except ApiException as e:
-            resp = k8s_beta.create_namespaced_deployment(
-                body=request_body, namespace=namespace)
-
-
 class DeploymentStack(object):
-    def __init__(self, units):
-        self.units = units
-
-    def deploy(self, context):
-        # TODO: log and error handling
-        for unit in self.units:
-            unit.deploy(context)
-
-
-init_stack = DeploymentStack([
-    NamespaceUnit('namespace_template.yml'),
-    VolumeUnit('pv_template.yml'),
-    VolumeClaimUnit('pvc_template.yml')
-])
-
-internal_stack = DeploymentStack([
-    DeploymentUnit('deployment_template.yml', k8s_v1, k8s_beta),
-    ServiceUnit('service_template.yml', k8s_v1, k8s_beta),
-])
-
-external_stack = DeploymentStack([
-    DeploymentUnit('deployment_template.yml', k8s_v1, k8s_beta),
-    ServiceUnit('service_template.yml', k8s_v1, k8s_beta),
-    IngressUnit('ingress_template.yml', k8s_v1, k8s_beta)
-])
+    def deploy(self):
+        pass
