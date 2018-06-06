@@ -54,6 +54,17 @@ class VolumeUnit(StackUnit):
             error_logger.error(e)
 
 
+class VolumeClaimUnit(StackUnit):
+    def apply(self, context, request_body):
+        try:
+            namespace = context.get('namespace')
+            resp = k8s_v1.create_namespaced_persistent_volume_claim(namespace, request_body)
+            logger.info(resp)
+            return resp
+        except Exception as e:
+            error_logger.error(e)
+
+
 class DeploymentUnit(StackUnit):
     def apply(self, context, request_body):
         try:
