@@ -19,10 +19,11 @@ error_logger = logging.getLogger("error")
 
 
 class StackUnit(object):
-    def __init__(self, template_name, k8s_v1, k8s_beta):
+    def __init__(self, template_name, k8s_v1, k8s_beta, name=None):
         self.template = env.get_template(template_name)
         self.k8s_v1 = k8s_v1
         self.k8s_beta = k8s_beta
+        self.name = name or self.__class__.__name__
 
     def apply(self, context, request_body):
         raise Exception('Should be implemented via sub classes')
@@ -31,7 +32,7 @@ class StackUnit(object):
     def deploy(self, context):
         rendered_template = self.template.render(context)
         request_body = yaml.load(rendered_template)
-        self.__apply(context, request_body)
+        return self.apply(context, request_body)
 
 
 class NamespaceUnit(StackUnit):
@@ -103,7 +104,7 @@ class IngressUnit(StackUnit):
             service_name = context.get('service_name')
             resp = k8s_beta.create_namespaced_ingress(namespace=namespace, body=request_body)
         except ApiException as e:
-            resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name,
+            resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace,
                                                      body=request_body)
         return resp
 
@@ -114,14 +115,17 @@ class DeploymentStack(object):
 
     def deploy(self, context):
         # TODO: log and error handling
+        result = {}
         for unit in self.units:
-            unit.deploy(context)
+            resp = unit.deploy(context)
+            result[unit.name] = resp
+        return result
 
 
 init_stack = DeploymentStack([
-    NamespaceUnit('namespace_template.yml'),
-    VolumeUnit('pv_template.yml'),
-    VolumeClaimUnit('pvc_template.yml')
+    NamespaceUnit('namespace_template.yml', k8s_v1, k8s_beta),
+    VolumeUnit('pv_template.yml', k8s_v1, k8s_beta),
+    VolumeClaimUnit('pvc_template.yml', k8s_v1, k8s_beta)
 ])
 
 internal_stack = DeploymentStack([
