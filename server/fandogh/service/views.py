@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from image.k8s_deployer import deploy, destroy, logs, get_services
+from .k8s_deployer import deploy, destroy, logs, get_services
 from image.models import ImageVersion
 from user.util import ClientInfo
 from .serializers import *
