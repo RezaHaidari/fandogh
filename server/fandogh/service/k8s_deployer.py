@@ -1,15 +1,12 @@
 import kubernetes
-import yaml
 import logging
 from kubernetes import client, config
-from kubernetes.client.rest import ApiException
 
+from service.stack import external_stack, init_stack
 from user.models import DEFAULT_NAMESPACE
 
 logger = logging.getLogger("docker.deploy")
 error_logger = logging.getLogger("error")
-from image.template_renderer import render_deployment_template, render_service_template, render_ingress_template, \
-    render_namespace_template, render_pv_template, render_pvc_template
 
 config.load_kube_config()
 k8s_beta = client.ExtensionsV1beta1Api()
@@ -50,60 +47,10 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
                'env_variables': env_variables,
                'namespace': namespace.name}
 
-    try:
-        namespace_template = render_namespace_template(context)
-        ns = yaml.load(namespace_template)
-        create_response = k8s_v1.create_namespace(body=ns)
-        logger.info(create_response)
-    except Exception as e:
-        error_logger.error(e)
+    init_unit_responses = init_stack.deploy(context)
+    external_unit_responses = external_stack.deploy(context)
 
-    try:
-        pv_template = render_pv_template(context)
-        pv = yaml.load(pv_template)
-        create_response = k8s_v1.create_persistent_volume(body=pv)
-        logger.info(create_response)
-    except Exception as e:
-        error_logger.error(e)
-
-    try:
-        pvc_template = render_pvc_template(context)
-        pvc = yaml.load(pvc_template)
-        create_response = k8s_v1.create_namespaced_persistent_volume_claim(namespace.name, pvc)
-        logger.info(create_response)
-
-    except Exception as e:
-        error_logger.error(e)
-
-    try:
-        deployment_template = render_deployment_template(context)
-        dep = yaml.load(deployment_template)
-        deployment = k8s_beta.read_namespaced_deployment(namespace=namespace.name, name=service_name)
-        print(deployment)
-        resp = k8s_beta.patch_namespaced_deployment(service_name,
-                                                    body=dep, namespace=namespace.name)
-    except ApiException as e:
-        resp = k8s_beta.create_namespaced_deployment(
-            body=dep, namespace=namespace.name)
-
-    logger.info("Deployment created. status='%s'" % str(resp.status))
-
-    try:
-        service_template = render_service_template(context)
-        service = yaml.load(service_template)
-        logger.info(service_template)
-        service_resp = k8s_v1.create_namespaced_service(body=service, namespace=namespace.name)
-    except ApiException as e:
-        service_resp = k8s_v1.patch_namespaced_service(service_name, body=service, namespace=namespace.name)
-    logger.info("Service created. status='%s'" % str(service_resp.status))
-
-    ingress_template = render_ingress_template(context)
-    ingress = yaml.load(ingress_template)
-    try:
-        resp = k8s_beta.create_namespaced_ingress(namespace=namespace.name, body=ingress)
-    except ApiException as e:
-        resp = k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace.name, body=ingress)
-    print("Ingress created. status='%s'" % str(resp.status))
+    service_resp = external_unit_responses.get('ServiceUnit')
     return {'name': service_resp.metadata.name,
             'namespace': namespace,
             'start_date': service_resp.metadata.creation_timestamp,
