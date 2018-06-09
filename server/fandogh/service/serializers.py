@@ -7,8 +7,8 @@ from user.models import DEFAULT_NAMESPACE
 class ServiceSerializer(serializers.Serializer):
     image_name = serializers.CharField(max_length=100)
     image_version = serializers.CharField(max_length=100)
-    service_name = serializers.RegexField(max_length=100, required=False, allow_blank=True, allow_null=True,
-                                          regex=r'^[a-z]{1}[a-z0-9-]*$', error_messages={
+    service_name = serializers.RegexField(max_length=100, required=True, allow_blank=False, allow_null=False,
+                                          regex=r'^[a-z]+(-[a-z0-9]+)*$', error_messages={
             "invalid": "service name should consist of lowercase letters, digits or dash, "
                        "for example my-service2 is valid"
         })
