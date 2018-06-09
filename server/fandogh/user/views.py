@@ -10,6 +10,7 @@ from rest_framework_jwt.views import ObtainJSONWebToken
 
 from common.response import ErrorResponse, GeneralResponse
 from user.models import Namespace
+from user.services import send_confirmation_email
 from .serializers import UserSerializer, EarlyAccessRequestSerializer
 
 error_logger = logging.getLogger("error")
@@ -66,6 +67,7 @@ class AccountView(APIView):
                     )
                     if u:
                         Namespace.objects.create(name=serialized.validated_data['namespace'], owner=u)
+                        send_confirmation_email(u)
                         return GeneralResponse("User has been registered successfully", status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(e)
