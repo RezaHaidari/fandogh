@@ -141,4 +141,4 @@ external_stack = DeploymentStack([
     DeploymentUnit('deployment_template.yml', k8s_v1, k8s_beta),
     ServiceUnit('service_template.yml', k8s_v1, k8s_beta),
     IngressUnit('ingress_template.yml', k8s_v1, k8s_beta)
-], labels={'service_type': 'internal'})
+], labels={'service_type': 'external'})
