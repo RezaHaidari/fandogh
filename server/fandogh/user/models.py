@@ -33,7 +33,7 @@ class ConfirmKey(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     @classmethod
-    def _get_activation_code(cls, user_id, code):
+    def _get_confirm_code(cls, user_id, code):
         last_valid_date = datetime.now() - timedelta(days=1)
         return cls.objects.filter(
             used=False,
@@ -46,7 +46,7 @@ class ConfirmKey(models.Model):
 class ActivationCode(ConfirmKey):
     @classmethod
     def activate_user(cls, user_id, code):
-        activation_code = cls._get_activation_code(user_id, code)
+        activation_code = cls._get_confirm_code(user_id, code)
         if activation_code is None:
             raise ActivationCode.DoesNotExist()
         activation_code.used = True
@@ -54,3 +54,11 @@ class ActivationCode(ConfirmKey):
         User.objects.filter(id=user_id).update(is_active=True)
 
 
+class RecoveryToken(ConfirmKey):
+    @classmethod
+    def validate(cls, user_id, code):
+        recovery_token = cls._get_confirm_code(user_id, code)
+        if recovery_token is None:
+            raise RecoveryToken.DoesNotExist
+        recovery_token.used = True
+        recovery_token.save()
