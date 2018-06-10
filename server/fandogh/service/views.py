@@ -33,7 +33,7 @@ class ServiceListView(APIView):
             internal = serializer.validated_data.get('internal', False)
             running_services = get_services(client.user)
             # TODO: a quick check for releasing alpha version
-            if len(running_services) > 1 and list(filter(lambda service: service.get('name', '') == service_name)) == 0 and client.user.username != 'soroosh@yahoo.com':
+            if len(running_services) > 1 and list(filter(lambda service: service.get('name', '') == service_name, running_services)) == 0 and client.user.username != 'soroosh@yahoo.com':
                 return Response(
                     "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
                     status=status.HTTP_400_BAD_REQUEST)
