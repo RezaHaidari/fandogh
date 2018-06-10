@@ -1,5 +1,6 @@
 import logging
 
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.db.transaction import atomic
 from django.http import QueryDict
@@ -10,9 +11,10 @@ from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 
 from common.response import ErrorResponse, GeneralResponse
-from user.models import Namespace, ActivationCode
-from user.services import send_confirmation_email
-from .serializers import UserSerializer, EarlyAccessRequestSerializer, IdentitySerializer
+from user.models import Namespace, ActivationCode, RecoveryToken
+from user.services import send_confirmation_email, send_recovery_token
+from .serializers import UserSerializer, EarlyAccessRequestSerializer, IdentitySerializer, EmailSerializer, \
+    RecoverySerializer
 
 error_logger = logging.getLogger("error")
 
@@ -89,6 +91,34 @@ class ActivationView(APIView):
             )
             return GeneralResponse("Your account has been activated")
         except ActivationCode.DoesNotExist:
+            return GeneralResponse("Requested code does not exist", status=404)
+        except ValidationError:
+            return GeneralResponse("Invalid request", status=400)
+
+
+class OnetimeTokenView(APIView):
+    def post(self, request):
+        serializer = EmailSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            send_recovery_token(serializer.validated_data['user'])
+            return GeneralResponse("An email containing account recovery instruction has been sent to you.")
+        except ValidationError:
+            return ErrorResponse(serializer.errors, status=400)
+
+    def patch(self, request, recovery_token):
+        serializer = RecoverySerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            RecoveryToken.validate(
+                code=recovery_token,
+                user_id=serializer.validated_data['id']
+            )
+            User.objects.filter(id=serializer.validated_data['id']).update(
+                password=make_password(serializer.validated_data['new_password'])
+            )
+            return GeneralResponse("Your account has been activated")
+        except RecoveryToken.DoesNotExist:
             return GeneralResponse("Requested code does not exist", status=404)
         except ValidationError:
             return GeneralResponse("Invalid request", status=400)
