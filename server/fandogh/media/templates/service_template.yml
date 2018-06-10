@@ -3,6 +3,9 @@ kind: Service
 metadata:
   labels:
     name: {{service_name}}
+    {% for key in labels %}
+    {{key}}: {{labels[key]}}
+    {% endfor %}
   name: {{service_name}}
 spec:
   ports:

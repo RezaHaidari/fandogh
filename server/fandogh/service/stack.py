@@ -105,11 +105,15 @@ class IngressUnit(StackUnit):
 
 
 class DeploymentStack(object):
-    def __init__(self, units):
+    def __init__(self, units, labels={}):
         self.units = units
+        self.labels = labels
 
     def deploy(self, context):
         # TODO:error handling
+        context_labels = context.get('labels', {})
+        context_labels.update(self.labels)
+        context['labels'] = context_labels
         result = {}
         for unit in self.units:
             resp = unit.deploy(context)
@@ -131,10 +135,10 @@ init_stack = DeploymentStack([
 internal_stack = DeploymentStack([
     DeploymentUnit('deployment_template.yml', k8s_v1, k8s_beta),
     ServiceUnit('service_template.yml', k8s_v1, k8s_beta),
-])
+], labels={'service_type': 'internal'})
 
 external_stack = DeploymentStack([
     DeploymentUnit('deployment_template.yml', k8s_v1, k8s_beta),
     ServiceUnit('service_template.yml', k8s_v1, k8s_beta),
     IngressUnit('ingress_template.yml', k8s_v1, k8s_beta)
-])
+], labels={'service_type': 'internal'})
