@@ -1,11 +1,15 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.loader import get_template
+from user.models import ActivationCode
 
 
 def _get_activation_link(user: User):
-    #  TODO
-    return "http://fandogh.cloud/todo/{}".format(user.id)
+    activation_code = ActivationCode.objects.create(user)
+    return getattr(settings, "FRONT_ACCOUNT_ACTIVATION_URL").format(
+        code=activation_code.code,
+        user_id=user.id,
+    )
 
 
 def send_confirmation_email(user: User):
