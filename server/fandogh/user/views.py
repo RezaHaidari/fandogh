@@ -74,7 +74,7 @@ class AccountView(APIView):
                         send_confirmation_email(u)
                         return GeneralResponse("User has been registered successfully", status=status.HTTP_201_CREATED)
             except Exception as e:
-                print(e)
+                error_logger.error("Error in creating account. {}".format(e))
                 return ErrorResponse("A user with current email or namespace exists", status=status.HTTP_400_BAD_REQUEST)
         else:
             return ErrorResponse(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
