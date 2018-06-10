@@ -36,12 +36,11 @@ PRODUCTION_LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'docker.deploy': {
+        'service.deploy': {
             'handlers': ['console', 'syslog'],
             'level': 'DEBUG',
             'propagate': True,
         },
-
     }
 }
 

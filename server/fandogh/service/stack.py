@@ -14,7 +14,7 @@ env = Environment(
     loader=FileSystemLoader(os.path.join(BASE_DIR, 'media', 'templates'))
 )
 
-logger = logging.getLogger("docker.deploy")
+logger = logging.getLogger("service.deploy")
 error_logger = logging.getLogger("error")
 
 
@@ -39,7 +39,6 @@ class NamespaceUnit(StackUnit):
     def apply(self, context, request_body):
         try:
             resp = k8s_v1.create_namespace(body=request_body)
-            logger.info(resp)
             return resp
         except Exception as e:
             error_logger.error(e)
@@ -49,7 +48,6 @@ class VolumeUnit(StackUnit):
     def apply(self, context, request_body):
         try:
             resp = k8s_v1.create_persistent_volume(body=request_body)
-            logger.info(resp)
             return resp
         except Exception as e:
             error_logger.error(e)
@@ -60,7 +58,6 @@ class VolumeClaimUnit(StackUnit):
         try:
             namespace = context.get('namespace')
             resp = k8s_v1.create_namespaced_persistent_volume_claim(namespace, request_body)
-            logger.info(resp)
             return resp
         except Exception as e:
             error_logger.error(e)
@@ -79,7 +76,6 @@ class DeploymentUnit(StackUnit):
             error_logger.error(e)
             resp = k8s_beta.create_namespaced_deployment(
                 body=request_body, namespace=namespace)
-            logger.info(resp)
         return resp
 
 
@@ -89,11 +85,10 @@ class ServiceUnit(StackUnit):
             namespace = context.get('namespace')
             service_name = context.get('service_name')
             resp = k8s_v1.create_namespaced_service(body=request_body, namespace=namespace)
-            logger.info(resp)
+
         except ApiException as e:
             error_logger.error(e)
             resp = k8s_v1.patch_namespaced_service(service_name, body=request_body, namespace=namespace)
-            logger.info(resp)
         return resp
 
 
@@ -114,10 +109,15 @@ class DeploymentStack(object):
         self.units = units
 
     def deploy(self, context):
-        # TODO: log and error handling
+        # TODO:error handling
         result = {}
         for unit in self.units:
             resp = unit.deploy(context)
+            logger.info('response from {} unit with context {} is {}'.format(
+                unit.name,
+                context,
+                resp
+            ))
             result[unit.name] = resp
         return result
 

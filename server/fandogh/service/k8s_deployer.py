@@ -5,7 +5,7 @@ from kubernetes import client, config
 from service.stack import external_stack, init_stack
 from user.models import DEFAULT_NAMESPACE
 
-logger = logging.getLogger("docker.deploy")
+logger = logging.getLogger("service.deploy")
 error_logger = logging.getLogger("error")
 
 config.load_kube_config()
@@ -78,7 +78,7 @@ def destroy(service_name, owner):
 
 
 def logs(service_name, owner):
-    result = "";
+    result = ""
     logger.info("Getting logs of {}".format(service_name))
     namespace = getattr(owner, 'namespace', DEFAULT_NAMESPACE)
     service_list = k8s_v1.list_namespaced_pod(namespace.name, label_selector='app=' + service_name)
