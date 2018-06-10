@@ -56,6 +56,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80, 
     return {'name': service_resp.metadata.name,
             'namespace': namespace,
             'start_date': service_resp.metadata.creation_timestamp,
+            'internal': internal,
             'state': 'RUNNING'}
 
 
