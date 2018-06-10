@@ -66,7 +66,7 @@ def destroy(service_name, owner):
     if service_exists:
         logger.info("removing service for {}".format(service_name))
         body = kubernetes.client.V1DeleteOptions()
-        k8s_beta.delete_namespaced_deployment(namespace=namespace.name, name=service_name, body=body, propagation_policy='Foreground')
+        k8s_beta.delete_namespaced_deployment(namespace=namespace.name, name=service_name, body=body)
         logger.info("removing deployment for {}".format(service_name))
         k8s_v1.delete_namespaced_service(namespace=namespace.name, name=service_name, body=body)
         logger.info("removing service for {}".format(service_name))
