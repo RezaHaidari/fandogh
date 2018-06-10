@@ -1,3 +1,6 @@
+import random
+from datetime import datetime, timedelta
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -14,3 +17,40 @@ class Namespace(models.Model):
 
 
 DEFAULT_NAMESPACE = Namespace(name='default')
+
+
+def _get_code():
+    return str(random.randint(10000000, 99999999))
+
+
+class ConfirmKey(models.Model):
+    class Meta:
+        abstract = True
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
+    code = models.CharField(max_length=8, default=_get_code)
+    used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def _get_activation_code(cls, user_id, code):
+        last_valid_date = datetime.now() - timedelta(days=1)
+        return cls.objects.filter(
+            used=False,
+            created_at__gt=last_valid_date,
+            code=code,
+            user_id=user_id,
+        ).first()
+
+
+class ActivationCode(ConfirmKey):
+    @classmethod
+    def activate_user(cls, user_id, code):
+        activation_code = cls._get_activation_code(user_id, code)
+        if activation_code is None:
+            raise ActivationCode.DoesNotExist()
+        activation_code.used = True
+        activation_code.save()
+        User.objects.filter(id=user_id).update(is_active=True)
+
+

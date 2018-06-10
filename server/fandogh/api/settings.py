@@ -118,6 +118,16 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = os.environ.get("EMAIL_HOST", 'mail.fandogh.cloud')
+EMAIL_PORT = os.environ.get("EMAIL_PORT", 587)
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", 'noreply@fandogh.cloud')
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", None)
+
+EMAIL_FROM = "noreply@fandogh.cloud"
+
+FRONT_ACCOUNT_ACTIVATION_URL = "http://fandogh.cloud/user/activation?code={code}&user_id={user_id}"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 

@@ -4,13 +4,15 @@ from django.contrib.auth.models import User
 from django.db.transaction import atomic
 from django.http import QueryDict
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 
 from common.response import ErrorResponse, GeneralResponse
-from user.models import Namespace
-from .serializers import UserSerializer, EarlyAccessRequestSerializer
+from user.models import Namespace, ActivationCode
+from user.services import send_confirmation_email
+from .serializers import UserSerializer, EarlyAccessRequestSerializer, IdentitySerializer
 
 error_logger = logging.getLogger("error")
 
@@ -62,13 +64,31 @@ class AccountView(APIView):
                         username=serialized.validated_data['email'],
                         password=serialized.initial_data['password'],
                         first_name='',
-                        last_name=''
+                        last_name='',
+                        is_active=False,
                     )
                     if u:
                         Namespace.objects.create(name=serialized.validated_data['namespace'], owner=u)
+                        send_confirmation_email(u)
                         return GeneralResponse("User has been registered successfully", status=status.HTTP_201_CREATED)
             except Exception as e:
                 print(e)
                 return ErrorResponse("A user with current email or namespace exists", status=status.HTTP_400_BAD_REQUEST)
         else:
             return ErrorResponse(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActivationView(APIView):
+    def patch(self, request, activation_code):
+        serializer = IdentitySerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            ActivationCode.activate_user(
+                code=activation_code,
+                user_id=serializer.validated_data['id']
+            )
+            return GeneralResponse("Your account has been activated")
+        except ActivationCode.DoesNotExist:
+            return GeneralResponse("Requested code does not exist", status=404)
+        except ValidationError:
+            return GeneralResponse("Invalid request", status=400)
