@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
@@ -17,3 +18,7 @@ class EarlyAccessRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = EarlyAccessRequest
         fields = ('email',)
+
+
+class IdentitySerializer(serializers.Serializer):
+    id = serializers.IntegerField()
