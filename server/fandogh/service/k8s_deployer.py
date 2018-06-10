@@ -2,7 +2,7 @@ import kubernetes
 import logging
 from kubernetes import client, config
 
-from service.stack import external_stack, init_stack
+from service.stack import external_stack, init_stack, internal_stack
 from user.models import DEFAULT_NAMESPACE
 
 logger = logging.getLogger("service.deploy")
@@ -23,16 +23,15 @@ def get_services(owner):
     service_list = k8s_v1.list_namespaced_service(namespace.name)
     result = []
     for item in service_list.items:
-        print(item)
-        print(item.metadata.name)
         result.append({'name': item.metadata.name,
                        'namespace': namespace,
                        'start_date': item.metadata.creation_timestamp,
+                       'internal': item.metadata.labels.get('service_type', 'external') == 'internal',
                        'state': 'RUNNING'})
     return result
 
 
-def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
+def deploy(image_name, version, service_name, owner, env_variables={}, port=80, internal=False):
     logger.debug("Deploying {}@{} as {} for {} user with these variables: {}"
                  .format(image_name,
                          version,
@@ -48,9 +47,12 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80):
                'namespace': namespace.name}
 
     init_unit_responses = init_stack.deploy(context)
-    external_unit_responses = external_stack.deploy(context)
+    if internal:
+        service_response = internal_stack.deploy(context)
+    else:
+        service_response = external_stack.deploy(context)
 
-    service_resp = external_unit_responses.get('ServiceUnit')
+    service_resp = service_response.get('ServiceUnit')
     return {'name': service_resp.metadata.name,
             'namespace': namespace,
             'start_date': service_resp.metadata.creation_timestamp,

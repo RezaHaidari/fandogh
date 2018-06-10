@@ -1,6 +1,4 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-
 from user.models import DEFAULT_NAMESPACE
 
 
@@ -14,6 +12,7 @@ class ServiceSerializer(serializers.Serializer):
         })
     environment_variables = serializers.DictField()
     port = serializers.IntegerField(default=80)
+    internal = serializers.BooleanField(default=False)
 
 
 class ServiceResponseSerializer(serializers.Serializer):
@@ -21,8 +20,12 @@ class ServiceResponseSerializer(serializers.Serializer):
     name = serializers.CharField()
     start_date = serializers.CharField()
     state = serializers.CharField()
+    internal = serializers.BooleanField(default=False)
 
     def get_url(self, ctx):
+        is_internal = ctx.get('internal', False)
+        if is_internal:
+            return "Internal Service"
         namespace = ctx.get('namespace', DEFAULT_NAMESPACE)
         name = ctx.get('name')
         if namespace.name == 'default':

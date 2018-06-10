@@ -30,6 +30,7 @@ class ServiceListView(APIView):
             service_name = serializer.validated_data.get('service_name')
             env_variables = serializer.validated_data.get('environment_variables')
             port = serializer.validated_data.get('port', 80)
+            internal = serializer.validated_data.get('internal', False)
             running_services = get_services(client.user)
             # TODO: a quick check for releasing alpha version
             if len(running_services) > 1 and client.user.username != 'soroosh@yahoo.com':
@@ -41,7 +42,7 @@ class ServiceListView(APIView):
                                                   image__owner=client.user).first()
             if version:
                 if version.state == 'BUILT':
-                    service = deploy(image_name, image_version, service_name, client.user, env_variables, port)
+                    service = deploy(image_name, image_version, service_name, client.user, env_variables, port, internal)
                 else:
                     # TODO: different message for different states
                     return Response('version has not been build successfully.', status=status.HTTP_400_BAD_REQUEST)
