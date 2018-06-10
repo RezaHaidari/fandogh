@@ -128,6 +128,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", None)
 EMAIL_FROM = "noreply@fandogh.cloud"
 
 FRONT_ACCOUNT_ACTIVATION_URL = "http://fandogh.cloud/user/activation?code={code}&user_id={user_id}"
+FRONT_ACCOUNT_RECOVERY_URL = "http://fandogh.cloud/user/recovery?code={code}&user_id={user_id}"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
