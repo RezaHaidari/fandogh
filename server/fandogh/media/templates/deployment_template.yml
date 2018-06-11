@@ -32,5 +32,4 @@ spec:
           name: pv-storage
         resources:
           limits:
-            cpu: 0.2
             memory: 200Mi
