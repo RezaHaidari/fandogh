@@ -86,7 +86,7 @@ class ImageBuildView(APIView):
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
 
         image_name = client.user.namespace.name + '/' + image_name
-        version = ImageVersion.objects.filter(image=image_name, version=image_version, image__owner=client.user).first()
+        version = ImageVersion.objects.filter(image=image_name, version=image_version, image__owner=client.user).last()
         if not version:
             return Response("Couldn't find the resource", status.HTTP_404_NOT_FOUND)
         build = version.builds.first()
