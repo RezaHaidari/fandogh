@@ -13,9 +13,9 @@ import os
 
 logger = logging.getLogger("docker.commands")
 # os.environ['DOCKER_TLS_VERIFY='] = '1'
-# os.environ['DOCKER_HOST'] = 'tcp://192.168.99.100:2376'
+# os.environ['DOCKER_HOST'] = 'tcp://192.168.99.101:2376'
 # os.environ['DOCKER_CERT_PATH'] = '/Users/SOROOSH/.minikube/certs'
-os.environ['DOCKER_API_VERSION='] = '1.23'
+# os.environ['DOCKER_API_VERSION='] = '1.23'
 executor = ThreadPoolExecutor(4)
 # client = docker.from_env(version='1.23')
 client = docker.from_env()
@@ -110,7 +110,7 @@ def build2(image_name, version, workspace, stream_handler=None):
             img = client.images.get(image_id),
         raise BuildError(last_event or 'Unknown', result_stream)
     except BuildError as e:
-        log_result = ''.join([chunk['stream'] for chunk in e.build_log if 'stream' in chunk])
+        log_result = ''.join([chunk.get('stream') or chunk.get('error') for chunk in e.build_log if 'stream' in chunk or 'error' in chunk])
     except APIError as e:
         log_result = str(e)
     except ConnectionError as e:
