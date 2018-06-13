@@ -38,16 +38,14 @@ class ServiceListView(APIView):
                     "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
                     status=status.HTTP_400_BAD_REQUEST)
 
-            version = ImageVersion.objects.filter(image__name=image_name, version=image_version,
+            version = ImageVersion.objects.filter(image__name=image_name,
+                                                  version=image_version,
+                                                  state='BUILT',
                                                   image__owner=client.user).first()
             if version:
-                if version.state == 'BUILT':
-                    service = deploy(image_name, image_version, service_name, client.user, env_variables, port, internal)
-                else:
-                    # TODO: different message for different states
-                    return Response('version has not been build successfully.', status=status.HTTP_400_BAD_REQUEST)
+                service = deploy(image_name, image_version, service_name, client.user, env_variables, port, internal)
             else:
-                return Response('Application or version does not exist.', status=status.HTTP_404_NOT_FOUND)
+                return Response('Could not find a successfully built image with the given name and version', status=status.HTTP_404_NOT_FOUND)
 
             data = ServiceResponseSerializer(
                 instance=service).data
