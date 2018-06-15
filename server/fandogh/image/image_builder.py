@@ -42,7 +42,7 @@ def build_task(version):
             img_build.logs += chunk['stream']
             img_build.save()
 
-    (img, log) = build2(version.image.name, version.version, workspace, _save_stream_chunk)
+    (img, log) = build(version.image.name, version.version, workspace, _save_stream_chunk)
     if img is None:
         img_build.logs = log
         img_build.save()
@@ -60,30 +60,7 @@ def prepare_workspace(version):
     return path
 
 
-def build(image_name, version, workspace):
-    logger.debug("Building {}@{} in {}".format(image_name, version, workspace))
-    tag = ":".join([image_name, version])
-    img = None
-    try:
-        img, output_stream = client.images.build(path=workspace, tag=tag)
-        log_result = ''.join([chunk['stream'] for chunk in output_stream if 'stream' in chunk])
-        logger.debug("Building {}@{} has been completed:\n{}".format(image_name, version, log_result))
-    except BuildError as e:
-        log_result = ''.join([chunk['stream'] for chunk in e.build_log if 'stream' in chunk])
-        logger.error("BuildError while building {}@{} :\n{}".format(image_name, version, log_result))
-    except APIError as e:
-        log_result = str(e)
-        logger.error("APIError while building {}@{} :\n{}".format(image_name, version, log_result))
-    except ConnectionError as e:
-        log_result = str(e)
-        logger.error("ConnectionError  while building {}@{} :\n{}".format(image_name, version, log_result))
-    except Exception as e:
-        log_result = str(e)
-        logger.error("UnexpectedError while building {}@{} :\n{}".format(image_name, version, log_result))
-    return img, log_result
-
-
-def build2(image_name, version, workspace, stream_handler=None):
+def build(image_name, version, workspace, stream_handler=None):
     tag = ":".join([image_name, version])
     img = None
     try:
