@@ -3,10 +3,25 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from common.response import GeneralResponse
+from service.managed_services.mysql import get_deployer
 from .k8s_deployer import deploy, destroy, logs, get_services
 from image.models import ImageVersion
 from user.util import ClientInfo
 from .serializers import *
+
+
+class ManagedServiceListView(APIView):
+    def post(self, request):
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        service_name = 'mysql'
+        variate = '5.7'
+
+        get_deployer(service_name).deploy(variate, {})
+
+        return GeneralResponse("Service deployed")
 
 
 class ServiceListView(APIView):
@@ -33,7 +48,8 @@ class ServiceListView(APIView):
             internal = serializer.validated_data.get('internal', False)
             running_services = get_services(client.user)
             # TODO: a quick check for releasing alpha version
-            if len(running_services) > 1 and list(filter(lambda service: service.get('name', '') == service_name, running_services)) == 0 and client.user.username != 'soroosh@yahoo.com':
+            if len(running_services) > 1 and list(filter(lambda service: service.get('name', '') == service_name,
+                                                         running_services)) == 0 and client.user.username != 'soroosh@yahoo.com':
                 return Response(
                     "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
                     status=status.HTTP_400_BAD_REQUEST)
@@ -45,7 +61,8 @@ class ServiceListView(APIView):
             if version:
                 service = deploy(image_name, image_version, service_name, client.user, env_variables, port, internal)
             else:
-                return Response('Could not find a successfully built image with the given name and version', status=status.HTTP_404_NOT_FOUND)
+                return Response('Could not find a successfully built image with the given name and version',
+                                status=status.HTTP_404_NOT_FOUND)
 
             data = ServiceResponseSerializer(
                 instance=service).data
