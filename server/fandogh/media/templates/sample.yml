@@ -1,0 +1,67 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mysql
+  finalizers:
+  - foregroundDeletion
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        ports:
+          - containerPort: 3306
+        env:
+        - name: SERVICE_NAME
+          value: mysql
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+      - name: mysql-admin
+        image: phpmyadmin/phpmyadmin
+        ports:
+          - containerPort: 80
+        env:
+        - name: PMA_HOST
+          value: localhost
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  # labels for the service
+  labels:
+    name: phpmyadmin
+  # name of the service
+  name: phpmyadmin
+spec:
+  ports:
+    # the port that this service should serve on
+    - port: 81
+      # set the target of the port, in this case 81 -> 80
+      targetPort: 80
+  # label keys and values that must match in order to receive traffic for this service
+  selector:
+    # select pods with the name "phpmyadmin"
+    name: mysql
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mysql-ingress
+
+spec:
+    rules:
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: mysql
+              servicePort: 81

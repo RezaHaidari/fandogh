@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{service_name}}
+  finalizers:
+  - foregroundDeletion
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{service_name}}
+    spec:
+      volumes:
+      - name: pv-storage
+        persistentVolumeClaim:
+          claimName: {{namespace}}-claim
+      containers:
+      - name: {{service_name}}
+        image: mysql:5.7
+        ports:
+          - containerPort: 3306
+        env:
+        - name: SERVICE_NAME
+          value: {{service_name}}
+          {% for key in env_variables %}
+        - name: {{key}}
+          value: {{env_variables[key]}}
+          {% endfor %}
+        volumeMounts:
+        - mountPath: "/mnt/shared-volume"
+          name: pv-storage
+        resources:
+          limits:
+            memory: 200Mi
+      - name: {{srvice_name}}-admin
+        image: phpmyadmin/phpmyadmin
+        ports:
+          - containerPort: 80
+        env:
+        - name: PMA_HOST
+          value: localhost
+
+
