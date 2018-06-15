@@ -107,15 +107,21 @@ def build2(image_name, version, workspace, stream_handler=None):
                     image_id = match.group(2)
             last_event = chunk
         if image_id:
-            img = client.images.get(image_id),
-        raise BuildError(last_event or 'Unknown', result_stream)
+            img = client.images.get(image_id)
+        else:
+            raise BuildError(last_event or 'Unknown', result_stream)
     except BuildError as e:
-        log_result = ''.join([chunk.get('stream') or chunk.get('error') for chunk in e.build_log if 'stream' in chunk or 'error' in chunk])
+        log_result = ''.join([chunk.get('stream') or chunk.get('error') for chunk in e.build_log if
+                              'stream' in chunk or 'error' in chunk])
+        logger.error("BuildError while building {}@{} :\n{}".format(image_name, version, log_result))
     except APIError as e:
         log_result = str(e)
+        logger.error("APIError while building {}@{} :\n{}".format(image_name, version, log_result))
     except ConnectionError as e:
         log_result = str(e)
+        logger.error("ConnectionError  while building {}@{} :\n{}".format(image_name, version, log_result))
     except Exception as e:
         log_result = str(e)
+        logger.error("Exception while building {}@{} :\n{}".format(image_name, version, log_result))
 
     return img, log_result
