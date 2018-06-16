@@ -27,7 +27,7 @@ spec:
           - containerPort: 80
         env:
         - name: PMA_HOST
-          value: localhost
+          value: 127.0.0.1
 
 ---
 
@@ -42,13 +42,14 @@ metadata:
 spec:
   ports:
     # the port that this service should serve on
-    - port: 81
+    - port: 80
       # set the target of the port, in this case 81 -> 80
       targetPort: 80
   # label keys and values that must match in order to receive traffic for this service
   selector:
     # select pods with the name "phpmyadmin"
-    name: mysql
+    app: mysql
+  type: ClusterIP
 
 ---
 
@@ -56,12 +57,18 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: mysql-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 
 spec:
+    backend:
+      serviceName: phpmyadmin
+      servicePort: 80
     rules:
-    - http:
-        paths:
-          - path: /
-            backend:
-              serviceName: mysql
-              servicePort: 81
+     - host: 'localhost'
+       http:
+         paths:
+         - path: /
+           backend:
+             serviceName: phpmyadmin
+             servicePort: 80
