@@ -44,6 +44,19 @@ class NamespaceUnit(StackUnit):
             error_logger.error(e)
 
 
+class ConfigUnit(StackUnit):
+    def apply(self, context, request_body):
+        try:
+            namespace = context.get('namespace')
+            service_name = context.get('service_name')
+            resp = self.k8s_v1.patch_namespaced_config_map(service_name + '-config', namespace, request_body)
+        except Exception as e:
+            error_logger.error(e)
+            resp = self.k8s_v1.create_namespaced_config_map(namespace, request_body)
+
+        return resp
+
+
 class VolumeUnit(StackUnit):
     def apply(self, context, request_body):
         try:
@@ -70,7 +83,7 @@ class DeploymentUnit(StackUnit):
             service_name = context.get('service_name')
             self.k8s_beta.read_namespaced_deployment(namespace=namespace, name=service_name)
             resp = self.k8s_beta.patch_namespaced_deployment(service_name,
-                                                        body=request_body, namespace=namespace)
+                                                             body=request_body, namespace=namespace)
             logger.info(resp)
         except ApiException as e:
             error_logger.error(e)
@@ -100,7 +113,7 @@ class IngressUnit(StackUnit):
             resp = self.k8s_beta.create_namespaced_ingress(namespace=namespace, body=request_body)
         except ApiException as e:
             resp = self.k8s_beta.patch_namespaced_ingress(service_name + '-ingress', namespace=namespace,
-                                                     body=request_body)
+                                                          body=request_body)
         return resp
 
 
