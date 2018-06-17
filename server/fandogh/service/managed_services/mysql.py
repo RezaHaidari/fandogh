@@ -1,9 +1,12 @@
-from service.stack import DeploymentStack, DeploymentUnit
+from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit
 
 mysql_stack = DeploymentStack([
-    DeploymentUnit('mysql_template')
+    DeploymentUnit('managed_services/mysql/deployment_template.yml'),
+    ServiceUnit('managed_services/mysql/service_template.yml'),
+    IngressUnit('managed_services/mysql/ingress_template.yml')
 ], {
-    'managed_by': 'fandogh'
+    'managed_by': 'fandogh',
+
 })
 
 
