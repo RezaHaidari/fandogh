@@ -16,17 +16,18 @@ class ManagedServiceListView(APIView):
         client = ClientInfo(request)
         if client.is_anonymous():
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
-        service_name = 'mysql'
-        variate = '5.7'
+
         serializer = ManagedServiceSerializer(data=request.data)
         if serializer.is_valid():
+            name = serializer.validated_data['name']
+            version = serializer.validated_data['version']
             context = {
                 'namespace': client.user.namespace.name,
                 'service_name': serializer.validated_data['name'],
                 'version': serializer.validated_data['version']
             }
 
-            deploy_result = get_deployer(service_name).deploy(variate, context)
+            deploy_result = get_deployer(name).deploy(version, context)
             return Response(deploy_result)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
