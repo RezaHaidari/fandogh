@@ -32,3 +32,9 @@ class ServiceResponseSerializer(serializers.Serializer):
             return 'http://%s.fandogh.cloud' % name
         else:
             return 'http://%s.%s.fandogh.cloud' % (name, namespace.name)
+
+
+class ManagedServiceSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    version = serializers.CharField(max_length=100)
+    config = serializers.DictField()

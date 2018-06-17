@@ -12,6 +12,10 @@ spec:
       labels:
         app: {{service_name}}
     spec:
+      volumes:
+        - name: pv-storage
+          persistentVolumeClaim:
+            claimName: {{namespace}}-claim
       containers:
       - name: mysql
         image: mysql:5.7
@@ -21,7 +25,8 @@ spec:
         - name: SERVICE_NAME
           value: {{service_name}}
         - name: MYSQL_ROOT_PASSWORD
-          value: {{MYSQL_ROOT_PASSWORD}}
+          value: root
+
       - name: phpmyadmin
         image: phpmyadmin/phpmyadmin
         ports:
