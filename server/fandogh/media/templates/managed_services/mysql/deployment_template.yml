@@ -17,8 +17,8 @@ spec:
           persistentVolumeClaim:
             claimName: {{namespace}}-claim
         - name: config-volume
-            configMap:
-              name: {{service_name}}-config
+          configMap:
+            name: {{service_name}}-config
       containers:
       - name: mysql
         image: mysql:5.7
@@ -30,6 +30,11 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           value: root
 
+        volumeMounts:
+        - name: pv-storage
+          mountPath: "/mnt/shared-volume"
+        - name: config-volume
+          mountPath: etc/mysql/mysql.conf.d
       - name: phpmyadmin
         image: phpmyadmin/phpmyadmin
         ports:
@@ -37,12 +42,6 @@ spec:
         env:
         - name: PMA_HOST
           value: 127.0.0.1
-
-        volumeMounts:
-        - name: pv-storage
-          mountPath: "/mnt/shared-volume"
-        - name: config-volume
-          mountPath: /etc/mysql/conf.d
         resources:
           limits:
             memory: 200Mi

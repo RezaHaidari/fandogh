@@ -1,13 +1,14 @@
-from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit
+from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, ConfigUnit
 
 mysql_stack = DeploymentStack([
+    ConfigUnit('managed_services/mysql/config_template.yml'),
     DeploymentUnit('managed_services/mysql/deployment_template.yml'),
     ServiceUnit('managed_services/mysql/service_template.yml'),
     IngressUnit('managed_services/mysql/ingress_template.yml')
 ], {
-    'managed_by': 'fandogh',
-
-})
+    'managed_by': 'fandogh'
+}
+)
 
 
 class ManagedServiceDeployer(object):

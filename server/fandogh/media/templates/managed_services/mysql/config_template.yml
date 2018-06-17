@@ -13,3 +13,5 @@ data:
     innodb_log_file_size=2GB
     transaction-isolation=READ-COMMITTED
     datadir=/mnt/shared-volume/data/{{service_name}}
+
+
