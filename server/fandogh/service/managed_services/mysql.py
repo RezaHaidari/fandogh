@@ -19,7 +19,18 @@ class ManagedServiceDeployer(object):
 class DefaultMysqlServiceDeployer(ManagedServiceDeployer):
     def deploy(self, variate_name, context):
         # TODO: validate context
+        service_name = context.get('service_name')
+        namespace = context.get('namespace')
+        php_admin_url = 'http://{}.{}.fandogh.cloud'.format(service_name, namespace)
         mysql_stack.deploy(context)
+
+        message = """Your Mysql service will be ready in a few seconds.
+You can have access to the PHPMyAdmin via following link:
+{}
+        """.format(php_admin_url)
+        return {
+            'message': message
+        }
 
 
 mysql_deployer = DefaultMysqlServiceDeployer()
