@@ -30,3 +30,14 @@ class ErrorResponse(Response):
             error_logger.error("Error %s occured in ErrorResponse" % e)
             payload = {"message": data}
             Response.__init__(self, payload, status, template_name, headers, exception, content_type)
+
+
+class ErrorListResponse(Response):
+    def __init__(self, field_erros: dict):
+        super(ErrorListResponse, self).__init__(
+            {
+                field: errors if isinstance(errors, list) else [errors]
+                for field, errors in field_erros.items()
+            },
+            status=400
+        )
