@@ -16,9 +16,6 @@ spec:
         - name: pv-storage
           persistentVolumeClaim:
             claimName: {{namespace}}-claim
-        - name: config-volume
-          configMap:
-            name: {{service_name}}-config
       containers:
       - name: mysql
         image: mysql:5.7
@@ -29,12 +26,10 @@ spec:
           value: {{service_name}}
         - name: MYSQL_ROOT_PASSWORD
           value: root
-
         volumeMounts:
-        - name: pv-storage
-          mountPath: "/mnt/shared-volume"
-        - name: config-volume
-          mountPath: etc/mysql/mysql.conf.d
+          - name: pv-storage
+            mountPath: /var/lib/mysql
+            subPath: {{service_name}}
       - name: phpmyadmin
         image: phpmyadmin/phpmyadmin
         ports:
