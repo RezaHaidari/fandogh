@@ -62,6 +62,7 @@ def prepare_workspace(version):
 
 def build(image_name, version, workspace, stream_handler=None):
     tag = ":".join([image_name, version])
+    log_result = ''
     img = None
     try:
         resp = client.images.client.api.build(path=workspace, tag=tag)
