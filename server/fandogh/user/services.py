@@ -5,7 +5,7 @@ from user.models import ActivationCode, RecoveryToken
 
 
 def _get_activation_link(user: User):
-    activation_code = ActivationCode.objects.create(user)
+    activation_code = ActivationCode.objects.create(user=user)
     return getattr(settings, "FRONT_ACCOUNT_ACTIVATION_URL").format(
         code=activation_code.code,
         user_id=user.id,
@@ -13,7 +13,7 @@ def _get_activation_link(user: User):
 
 
 def _get_account_recovery_link(user: User):
-    recovery_token = RecoveryToken.objects.create(user)
+    recovery_token = RecoveryToken.objects.create(user=user)
     return getattr(settings, "FRONT_ACCOUNT_RECOVERY_URL").format(
         code=recovery_token.code,
         user_id=user.id,
