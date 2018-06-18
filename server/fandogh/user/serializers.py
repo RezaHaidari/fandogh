@@ -3,7 +3,9 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 
+from user import models
 from user.models import EarlyAccessRequest
+from django.utils.translation import ugettext as _
 
 
 class UserSerializer(Serializer):
@@ -13,6 +15,13 @@ class UserSerializer(Serializer):
 
     class Meta:
         exclude = ('password',)
+
+    def validate(self, attrs):
+        if models.User.objects.filter(email=attrs['email']).exists():
+            raise ValidationError({'email': [_("Email address already exists")]})
+        if models.Namespace.objects.filter(name=attrs['namespace']).exists():
+            raise ValidationError({'namespace': [_("This name already used by another account, please choose another name")]})
+        return attrs
 
 
 class EarlyAccessRequestSerializer(serializers.ModelSerializer):
@@ -33,7 +42,7 @@ class EmailSerializer(serializers.Serializer):
         try:
             attrs['user'] = User.objects.get(email=attrs['email'])
         except User.DoesNotExist:
-            raise ValidationError("User doesn't exists")
+            raise ValidationError(_("User doesn't exists"))
         return attrs
 
 
