@@ -1,17 +1,19 @@
 {% extends 'base.html' %}
 
 {% block title %}
-                    تایید آدرس ایمیل
+    تایید آدرس ایمیل
 
 
 {% endblock %}
 {% block msg %}
 
-            <p style="direction: rtl;text-align: right;">
-                با تشکر از انتخاب فندق، لطفا برای تایید حساب‌ کاربری خود روی لینک زیر کلیک کنید
-                <a href="{{ activation_link }}">
-                    فعال‌سازی
-                </a>
-            </p>
+    <p style="direction: rtl;text-align: right;">
+        با تشکر از انتخاب فندق، لطفا برای تایید حساب‌ کاربری خود روی لینک زیر کلیک کنید
+    </p>
+    <p style="direction: rtl;text-align: center;" >
+        <a href="{{ activation_link }}">
+            فعال‌سازی
+        </a>
+    </p>
 
 {% endblock %}
