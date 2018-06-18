@@ -5,6 +5,22 @@ from rest_framework.test import APITestCase
 from user.models import ActivationCode, RecoveryToken
 
 
+class RegisterTestCase(APITestCase):
+    def test_create_user_with_duplicate_email_address_should_return_400(self):
+        response = self.client.post("/api/accounts", {
+            "email": "mahdi@test.co",
+            "password": "some",
+            "namespace": "ns1",
+        })
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post("/api/accounts", {
+            "email": "mahdi@test.co",
+            "password": "some",
+            "namespace": "ns1",
+        })
+        self.assertEqual(response.status_code, 400)
+
+
 class AccountActivation(APITestCase):
     def test_activate_an_account(self):
         u = User.objects.create_user(
@@ -56,9 +72,8 @@ class AccountRecovery(APITestCase):
             email="mahdi@test.tset",
         )
         rt = RecoveryToken.objects.create(user=u)
-        r = self.client.patch("/api/users/recovery-tokens/{}".format(rt.code), data={"id": 1, "new_password": "new_test"})
+        r = self.client.patch("/api/users/recovery-tokens/{}".format(rt.code),
+                              data={"id": 1, "new_password": "new_test"})
         self.assertEqual(r.status_code, 200)
         response = self.client.post("/api/tokens", data=dict(username="mahdi", password="new_test"))
         self.assertEqual(response.status_code, 200)
-
-
