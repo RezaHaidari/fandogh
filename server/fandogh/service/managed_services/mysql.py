@@ -10,7 +10,7 @@ mysql_stack = DeploymentStack([
 }
 )
 
-
+# TODO: add state checker
 class ManagedServiceDeployer(object):
     def deploy(self, variate_name):
         pass
