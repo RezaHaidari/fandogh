@@ -6,9 +6,11 @@ mysql_stack = DeploymentStack([
     ServiceUnit('managed_services/mysql/service_template.yml'),
     IngressUnit('managed_services/mysql/ingress_template.yml')
 ], {
-    'managed_by': 'fandogh'
+    'managed_by': 'fandogh',
+    'service_type': 'managed',
 }
 )
+
 
 # TODO: add state checker
 class ManagedServiceDeployer(object):
