@@ -34,7 +34,8 @@ You can have access to the PHPMyAdmin via following link:
         }
 
     def prepare_context(self, context):
-        context['IngressUnit'] = context.get('phpmyadmin_enabled', True)
+        context['phpmyadmin_enabled'] = context.get('phpmyadmin_enabled', True) in (True, 't', 'true', 1)
+        context['IngressUnit.enabled'] = context.get('phpmyadmin_enabled', True)
         context['mysql_root_password'] = context.get('mysql_root_password', 'root')
 
 
