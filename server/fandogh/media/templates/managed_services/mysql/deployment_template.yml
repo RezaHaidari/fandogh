@@ -25,11 +25,12 @@ spec:
         - name: SERVICE_NAME
           value: {{service_name}}
         - name: MYSQL_ROOT_PASSWORD
-          value: root
+          value: {{mysql_root_password}}
         volumeMounts:
           - name: pv-storage
             mountPath: /var/lib/mysql
             subPath: {{service_name}}
+      {% if phpmyadmin_enabled %}
       - name: phpmyadmin
         image: phpmyadmin/phpmyadmin
         ports:
@@ -40,3 +41,4 @@ spec:
         resources:
           limits:
             memory: 200Mi
+      {% endif %}
