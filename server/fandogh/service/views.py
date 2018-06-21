@@ -26,6 +26,9 @@ class ManagedServiceListView(APIView):
                 'service_name': serializer.validated_data['name'],
                 'version': serializer.validated_data['version']
             }
+            user_config = serializer.validated_data['config']
+            if user_config:
+                context.update(user_config)
 
             deploy_result = get_deployer(name).deploy(version, context)
             return Response(deploy_result)
