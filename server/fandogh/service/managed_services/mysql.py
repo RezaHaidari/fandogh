@@ -23,8 +23,8 @@ class DefaultMysqlServiceDeployer(ManagedServiceDeployer):
         service_name = context.get('service_name')
         namespace = context.get('namespace')
         php_admin_url = 'http://{}.{}.fandogh.cloud'.format(service_name, namespace)
+        self.prepare_context(context)
         mysql_stack.deploy(context)
-
         message = """Your Mysql service will be ready in a few seconds.
 You can have access to the PHPMyAdmin via following link:
 {}
@@ -32,6 +32,10 @@ You can have access to the PHPMyAdmin via following link:
         return {
             'message': message
         }
+
+    def prepare_context(self, context):
+        context['IngressUnit'] = context.get('phpmyadmin_enabled', True)
+        context['mysql_root_password'] = context.get('mysql_root_password', 'root')
 
 
 mysql_deployer = DefaultMysqlServiceDeployer()
