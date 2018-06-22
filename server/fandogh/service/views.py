@@ -26,6 +26,9 @@ class ManagedServiceListView(APIView):
                 'service_name': serializer.validated_data['name'],
                 'version': serializer.validated_data['version']
             }
+            user_config = serializer.validated_data['config']
+            if user_config:
+                context.update(user_config)
 
             deploy_result = get_deployer(name).deploy(version, context)
             return Response(deploy_result)
@@ -54,7 +57,7 @@ class ServiceListView(APIView):
             service_name = serializer.validated_data.get('service_name')
             env_variables = serializer.validated_data.get('environment_variables')
             port = serializer.validated_data.get('port', 80)
-            internal = serializer.validated_data.get('internal', False)
+            service_type = serializer.validated_data.get('service_type', 'external')
             running_services = get_services(client.user)
             # TODO: a quick check for releasing alpha version
             if len(running_services) > 1 and list(filter(lambda service: service.get('name', '') == service_name,
@@ -68,7 +71,8 @@ class ServiceListView(APIView):
                                                   state='BUILT',
                                                   image__owner=client.user).first()
             if version:
-                service = deploy(image_name, image_version, service_name, client.user, env_variables, port, internal)
+                service = deploy(image_name, image_version, service_name, client.user, env_variables, port,
+                                 service_type)
             else:
                 return Response('Could not find a successfully built image with the given name and version',
                                 status=status.HTTP_404_NOT_FOUND)

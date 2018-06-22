@@ -24,15 +24,20 @@ class StackUnit(object):
         self.k8s_v1 = _k8s_v1
         self.k8s_beta = _k8s_beta
         self.name = name or self.__class__.__name__
+        self.enabled_key = '{}.enabled'.format(self.name)
 
     def apply(self, context, request_body):
         raise Exception('Should be implemented via sub classes')
         pass
 
     def deploy(self, context):
-        rendered_template = self.template.render(context)
-        request_body = yaml.load(rendered_template)
-        return self.apply(context, request_body)
+        is_enabled = context.get(self.enabled_key, True)
+        if is_enabled in (True, 'true', 't', 1):
+            rendered_template = self.template.render(context)
+            request_body = yaml.load(rendered_template)
+            return self.apply(context, request_body)
+        else:
+            return {'message': ' {} is disabled'.format(self.name)}
 
 
 class NamespaceUnit(StackUnit):
@@ -108,6 +113,7 @@ class ServiceUnit(StackUnit):
 class IngressUnit(StackUnit):
     def apply(self, context, request_body):
         try:
+
             namespace = context.get('namespace')
             service_name = context.get('service_name')
             resp = self.k8s_beta.create_namespaced_ingress(namespace=namespace, body=request_body)

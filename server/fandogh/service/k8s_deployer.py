@@ -26,12 +26,12 @@ def get_services(owner):
         result.append({'name': item.metadata.name,
                        'namespace': namespace,
                        'start_date': item.metadata.creation_timestamp,
-                       'internal': item.metadata.labels.get('service_type', 'external') == 'internal',
+                       'service_type': item.metadata.labels.get('service_type', 'external'),
                        'state': 'RUNNING'})
     return result
 
 
-def deploy(image_name, version, service_name, owner, env_variables={}, port=80, internal=False):
+def deploy(image_name, version, service_name, owner, env_variables={}, port=80, service_type='external'):
     logger.debug("Deploying {}@{} as {} for {} user with these variables: {}"
                  .format(image_name,
                          version,
@@ -47,7 +47,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80, 
                'namespace': namespace.name}
 
     init_unit_responses = init_stack.deploy(context)
-    if internal:
+    if service_type == 'internal':
         service_response = internal_stack.deploy(context)
     else:
         service_response = external_stack.deploy(context)
@@ -56,7 +56,7 @@ def deploy(image_name, version, service_name, owner, env_variables={}, port=80, 
     return {'name': service_resp.metadata.name,
             'namespace': namespace,
             'start_date': service_resp.metadata.creation_timestamp,
-            'internal': internal,
+            'service_type': service_type,
             'state': 'RUNNING'}
 
 
