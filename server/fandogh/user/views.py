@@ -74,7 +74,7 @@ class AccountView(APIView):
                     )
                     if u:
                         Namespace.objects.create(name=serialized.validated_data['namespace'], owner=u)
-                        send_confirmation_email(u)
+                        # send_confirmation_email(u)
                         return GeneralResponse(_("User has been registered successfully"), status=status.HTTP_201_CREATED)
             except Exception as e:
                 error_logger.error("Error in creating account. {}".format(e))
