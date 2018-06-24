@@ -1,7 +1,10 @@
-from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit
+from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, init_stack, NamespaceUnit, VolumeUnit, VolumeClaimUnit
 from service.utils import generate_ingress_url
 
 mysql_stack = DeploymentStack([
+    NamespaceUnit('namespace_template.yml'),
+    VolumeUnit('pv_template.yml'),
+    VolumeClaimUnit('pvc_template.yml'),
     DeploymentUnit('managed_services/mysql/deployment_template.yml'),
     ServiceUnit('managed_services/mysql/service_template.yml'),
     IngressUnit('managed_services/mysql/ingress_template.yml')
@@ -23,7 +26,7 @@ class DefaultMysqlServiceDeployer(ManagedServiceDeployer):
         # TODO: validate context
         service_name = context.get('service_name')
         namespace = context.get('namespace')
-        php_admin_url = generate_ingress_url(service_name,namespace)
+        php_admin_url = generate_ingress_url(service_name, namespace)
         self.prepare_context(context)
         mysql_stack.deploy(context)
         message = """Your Mysql service will be ready in a few seconds.
