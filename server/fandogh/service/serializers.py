@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from service.utils import generate_ingress_url
 from user.models import DEFAULT_NAMESPACE
 
 
@@ -12,7 +14,7 @@ class ServiceSerializer(serializers.Serializer):
         })
     environment_variables = serializers.DictField()
     port = serializers.IntegerField(default=80)
-    service_type = serializers.CharField(allow_blank=True,default='external')
+    service_type = serializers.CharField(allow_blank=True, default='external')
 
 
 class ServiceResponseSerializer(serializers.Serializer):
@@ -28,10 +30,7 @@ class ServiceResponseSerializer(serializers.Serializer):
             return service_type
         namespace = ctx.get('namespace', DEFAULT_NAMESPACE)
         name = ctx.get('name')
-        if namespace.name == 'default':
-            return 'http://%s.fandogh.cloud' % name
-        else:
-            return 'http://%s.%s.fandogh.cloud' % (name, namespace.name)
+        return generate_ingress_url(name, namespace.name)
 
 
 class ManagedServiceSerializer(serializers.Serializer):

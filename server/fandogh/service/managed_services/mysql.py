@@ -1,4 +1,5 @@
 from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit
+from service.utils import generate_ingress_url
 
 mysql_stack = DeploymentStack([
     DeploymentUnit('managed_services/mysql/deployment_template.yml'),
@@ -22,7 +23,7 @@ class DefaultMysqlServiceDeployer(ManagedServiceDeployer):
         # TODO: validate context
         service_name = context.get('service_name')
         namespace = context.get('namespace')
-        php_admin_url = 'http://{}.{}.fandogh.cloud'.format(service_name, namespace)
+        php_admin_url = generate_ingress_url(service_name,namespace)
         self.prepare_context(context)
         mysql_stack.deploy(context)
         message = """Your Mysql service will be ready in a few seconds.
