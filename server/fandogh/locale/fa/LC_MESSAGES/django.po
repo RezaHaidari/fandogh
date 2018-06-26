@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-18 07:50+0000\n"
+"POT-Creation-Date: 2018-06-26 09:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,8 @@ msgstr "این آدرس ایمیل تکراری است"
 
 #: user/serializers.py:23
 msgid "This name already used by another account, please choose another name"
-msgstr "این نام قبلا توسط فرد دیگری استفاده شده است، لطفا نام دیگری انتخاب کنید"
+msgstr ""
+"این نام قبلا توسط فرد دیگری استفاده شده است، لطفا نام دیگری انتخاب کنید"
 
 #: user/serializers.py:45
 msgid "User doesn't exists"
@@ -46,7 +47,7 @@ msgstr "حساب‌کاربری با موفقیت ساخته شد"
 msgid "A user with current email or namespace exists"
 msgstr "کاربری با این ایمیل یا فضانام قبلا ساخته شده است"
 
-#: user/views.py:97 user/views.py:125
+#: user/views.py:97
 msgid "Your account has been activated"
 msgstr "حساب کاربری شما فعال شد"
 
@@ -61,3 +62,7 @@ msgstr "درخواست شما معتبر نیست"
 #: user/views.py:110
 msgid "An email containing account recovery instruction has been sent to you."
 msgstr "ایمیلی حاوی دستورالعملی بازیابی حساب کاربری برای شما ارسال شد"
+
+#: user/views.py:125
+msgid "Your password has been changed"
+msgstr "رمز عبور شما با موفقیت تغییر یافت"

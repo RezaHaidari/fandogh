@@ -14,6 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.urls import path, include
 
@@ -21,6 +22,8 @@ from user.views import TokenView, AccountView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+]
+urlpatterns += i18n_patterns(
     path('api/tokens', TokenView.as_view()),
     path('api/accounts', AccountView.as_view()),
     # path('api/apps', AppView.as_view()),
@@ -28,4 +31,5 @@ urlpatterns = [
     url(r'api/services', include('service.urls')),
     url(r'api/managed-services', include('service.managed_service_urls')),
     url(r'api/users/', include('user.urls')),
-]
+    prefix_default_language=False
+)
