@@ -49,3 +49,7 @@ deployer = {'mysql': mysql_deployer}
 
 def get_deployer(managed_service_name):
     return deployer.get(managed_service_name, None)
+
+
+def get_deployers():
+    return deployer.keys()
