@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from service.managed_services.mysql import get_deployer
 from user.models import DEFAULT_NAMESPACE
 
 
@@ -38,3 +40,8 @@ class ManagedServiceSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     version = serializers.CharField(max_length=100)
     config = serializers.DictField()
+
+    def validate(self, attrs):
+        if get_deployer(attrs['name']) is None:
+            raise ValidationError({'name': ['Requested service does not exists as a managed-service']})
+        return attrs
