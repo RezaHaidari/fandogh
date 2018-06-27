@@ -122,7 +122,7 @@ class OnetimeTokenView(APIView):
             User.objects.filter(id=serializer.validated_data['id']).update(
                 password=make_password(serializer.validated_data['new_password'])
             )
-            return GeneralResponse(_("Your account has been activated"))
+            return GeneralResponse(_("Your password has been changed"))
         except RecoveryToken.DoesNotExist:
             return GeneralResponse(_("Requested code does not exist"), status=404)
         except ValidationError:
