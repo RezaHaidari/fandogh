@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from common.response import GeneralResponse
-from service.managed_services.mysql import get_deployer
+from service.managed_services.mysql import get_deployer, get_deployers
 from .k8s_deployer import deploy, destroy, logs, get_services
 from image.models import ImageVersion
 from user.util import ClientInfo
@@ -12,6 +12,12 @@ from .serializers import *
 
 
 class ManagedServiceListView(APIView):
+    def get(self, request):
+        client = ClientInfo(request)
+        if client.is_anonymous():
+            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+        return Response(get_deployers(), status=status.HTTP_200_OK)
+
     def post(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
