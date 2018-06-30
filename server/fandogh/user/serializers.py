@@ -61,13 +61,15 @@ class OTTRequestSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         attrs = super(OTTRequestSerializer, self).validate(attrs)
-        user = User.objects.filter(Q(email=attrs['identifier']) | Q(username=attrs['identifier'])).first()
+        identifier = attrs['identifier'].split("+")[0]
+        user = User.objects.filter(Q(email__startswith=identifier) | Q(username=identifier)).first()
         if user is None:
             raise ValidationError({"identifier": ["There is no user with this email/username"]})
         return {
             "user": user,
             **attrs
         }
+
 
 class RecoverySerializer(serializers.Serializer):
     id = serializers.IntegerField()
