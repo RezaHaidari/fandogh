@@ -19,7 +19,7 @@ error_logger = logging.getLogger("error")
 
 class TokenView(ObtainJSONWebToken):
     def post(self, request):
-        data = {**request.data}
+        data = dict(username=request.data.get('username'), password=request.data.get('password'))
         if 'username' in data:
             data['username'] = str(data['username']).lower()
         serializer = self.get_serializer(data=data)
