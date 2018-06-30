@@ -82,6 +82,5 @@ class AccountRecovery(APITestCase):
         r = self.client.patch("/api/users/recovery-tokens/{}".format(rt.code),
                               data={"id": 1, "new_password": "new_test"})
         self.assertEqual(r.status_code, 200)
-        print(r.status_code)
         response = self.client.post("/api/tokens", data=dict(username="mahdi", password="new_test"))
         self.assertEqual(response.status_code, 200)
