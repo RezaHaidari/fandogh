@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-01 04:24+0000\n"
+"POT-Creation-Date: 2018-07-01 09:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,18 +26,32 @@ msgstr "انگلیسی"
 msgid "Persian"
 msgstr "فارسی"
 
-#: user/serializers.py:27
+#: user/serializers.py:15
+#, fuzzy
+#| msgid ""
+#| "you can use lowercase english letters, digits, dash and dot in your "
+#| "username"
+msgid ""
+"Only lowercase english letters, digits, dash and dot are allowed in username"
+msgstr "فقط حروف انگلیسی، اعداد، خط تیره و نقطه در نام‌کاربری قابل‌قبول است"
+
+#: user/serializers.py:29
 msgid "Email address already exists"
 msgstr "این آدرس ایمیل تکراری است"
 
-#: user/serializers.py:29
+#: user/serializers.py:31
 msgid "Username already taken"
 msgstr "نام‌کاربری قبلا توسط فرد دیگری انتخاب شده"
 
-#: user/serializers.py:32
+#: user/serializers.py:34
 msgid "This name already used by another account, please choose another name"
-msgstr "این نام قبلا توسط فرد دیگری انتخاب شده، لطفا نام دیگری انتخاب کنید"
-"این نام قبلا توسط فرد دیگری استفاده شده است، لطفا نام دیگری انتخاب کنید"
+msgstr ""
+"این نام قبلا توسط فرد دیگری انتخاب شده، لطفا نام دیگری انتخاب کنیداین نام "
+"قبلا توسط فرد دیگری استفاده شده است، لطفا نام دیگری انتخاب کنید"
+
+#: user/serializers.py:72
+msgid "There is no user with this email/username"
+msgstr "هیچ کاربری با این ایمیل/نام‌کاربری وجود ندارد"
 
 #: user/views.py:34
 msgid "Username or password is wrong"

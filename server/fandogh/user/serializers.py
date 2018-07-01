@@ -11,7 +11,9 @@ from django.utils.translation import ugettext as _
 
 
 class UserSerializer(Serializer):
-    username = serializers.RegexField(max_length=32, regex=r"^[a-zA-Z0-9\.]{3,32}$", )
+    username = serializers.RegexField(max_length=32, regex=r"^[a-zA-Z0-9\.]{3,32}$", error_messages={
+        'invalid': _("Only lowercase english letters, digits, dash and dot are allowed in username")
+    })
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128)
     namespace = serializers.CharField(max_length=20)
@@ -67,7 +69,7 @@ class OTTRequestSerializer(serializers.Serializer):
         else:
             user = User.objects.filter(username=identifier).first()
         if user is None:
-            raise ValidationError({"identifier": ["There is no user with this email/username"]})
+            raise ValidationError({"identifier": [_("There is no user with this email/username")]})
         return {
             "user": user,
             **attrs
