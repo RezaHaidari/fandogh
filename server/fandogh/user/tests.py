@@ -8,12 +8,22 @@ from user.models import ActivationCode, RecoveryToken
 class RegisterTestCase(APITestCase):
     def test_create_user_with_duplicate_email_address_should_return_400(self):
         response = self.client.post("/api/accounts", {
+            "username": "mahdi",
             "email": "mahdi@test.co",
             "password": "some",
             "namespace": "ns1",
         })
         self.assertEqual(response.status_code, 201)
         response = self.client.post("/api/accounts", {
+            "email": "mahdi@test.co",
+            "password": "some",
+            "namespace": "ns1",
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_user_invalid_username(self):
+        response = self.client.post("/api/accounts", {
+            "username": "some_invalid-username",
             "email": "mahdi@test.co",
             "password": "some",
             "namespace": "ns1",
@@ -61,9 +71,15 @@ class AccountRecovery(APITestCase):
             password="testtset",
             email="mahdi@test.tset",
         )
-        response = self.client.post("/api/users/recovery-tokens", data={"email": "mahdi@test.tset"})
+        response = self.client.post("/api/users/recovery-tokens", data={"identifier": "mahdi@test.tset"})
         self.assertEqual(response.status_code, 200)
-        send_recovery_token.assert_called_once_with(u)
+        response = self.client.post("/api/users/recovery-tokens", data={"identifier": "mahdi"})
+        self.assertEqual(response.status_code, 200)
+        send_recovery_token.assert_has_calls([
+            mock.call(u),
+            mock.call(u),
+        ])
+
 
     def test_use_account_recovery_token(self):
         u = User.objects.create_user(

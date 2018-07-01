@@ -1,14 +1,19 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
+from django.db.transaction import atomic
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import Serializer
 
 from user import models
-from user.models import EarlyAccessRequest
+from user.models import EarlyAccessRequest, Namespace
 from django.utils.translation import ugettext as _
 
 
 class UserSerializer(Serializer):
+    username = serializers.RegexField(max_length=32, regex=r"^[a-zA-Z0-9\._]{3,32}$", error_messages={
+        'invalid': _("Only lowercase english letters, digits, underscores and dots are allowed in username")
+    })
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128)
     namespace = serializers.CharField(max_length=20)
@@ -16,12 +21,31 @@ class UserSerializer(Serializer):
     class Meta:
         exclude = ('password',)
 
-    def validate(self, attrs):
-        if models.User.objects.filter(email=attrs['email']).exists():
-            raise ValidationError({'email': [_("Email address already exists")]})
+    def validate(self, attrs: dict):
+        attrs['username'] = str(attrs['username']).lower()
+        duplicate_user = models.User.objects.filter(Q(email=attrs['email']) | Q(username=attrs['username'])).first()
+        if isinstance(duplicate_user, User):
+            if duplicate_user.email == attrs['email']:
+                raise ValidationError({'email': [_("Email address already exists")]})
+            if duplicate_user.username == attrs['username']:
+                raise ValidationError({'username': [_("Username already taken")]})
         if models.Namespace.objects.filter(name=attrs['namespace']).exists():
-            raise ValidationError({'namespace': [_("This name already used by another account, please choose another name")]})
+            raise ValidationError(
+                {'namespace': [_("This name already used by another account, please choose another name")]}
+            )
         return attrs
+
+    def save(self, **kwargs):
+        with atomic():
+            u = User.objects.create_user(
+                email=self.validated_data['email'],
+                username=self.validated_data['username'],
+                password=self.initial_data['password'],
+                **kwargs
+            )
+            if u:
+                Namespace.objects.create(name=self.validated_data['namespace'], owner=u)
+            return u
 
 
 class EarlyAccessRequestSerializer(serializers.ModelSerializer):
@@ -34,16 +58,22 @@ class IdentitySerializer(serializers.Serializer):
     id = serializers.IntegerField()
 
 
-class EmailSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+class OTTRequestSerializer(serializers.Serializer):
+    identifier = serializers.CharField()
 
     def validate(self, attrs):
-        attrs = super(EmailSerializer, self).validate(attrs)
-        try:
-            attrs['user'] = User.objects.get(email=attrs['email'])
-        except User.DoesNotExist:
-            raise ValidationError(_("User doesn't exists"))
-        return attrs
+        attrs = super(OTTRequestSerializer, self).validate(attrs)
+        identifier = attrs['identifier']
+        if '@' in identifier:
+            user = User.objects.filter(email=identifier).first()
+        else:
+            user = User.objects.filter(username=identifier).first()
+        if user is None:
+            raise ValidationError({"identifier": [_("There is no user with this email/username")]})
+        return {
+            "user": user,
+            **attrs
+        }
 
 
 class RecoverySerializer(serializers.Serializer):
