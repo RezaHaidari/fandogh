@@ -12,7 +12,7 @@ from django.utils.translation import ugettext as _
 
 class UserSerializer(Serializer):
     username = serializers.RegexField(max_length=32, regex=r"^[a-zA-Z0-9\._]{3,32}$", error_messages={
-        'invalid': _("Only lowercase english letters, digits, underscore and dot are allowed in username")
+        'invalid': _("Only lowercase english letters, digits, underscores and dots are allowed in username")
     })
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128)
