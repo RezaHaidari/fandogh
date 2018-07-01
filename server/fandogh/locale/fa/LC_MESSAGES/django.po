@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-26 09:32+0000\n"
+"POT-Creation-Date: 2018-07-01 04:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,51 +18,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: user/serializers.py:21
+#: api/settings.py:117
+msgid "English"
+msgstr "انگلیسی"
+
+#: api/settings.py:118
+msgid "Persian"
+msgstr "فارسی"
+
+#: user/serializers.py:27
 msgid "Email address already exists"
 msgstr "این آدرس ایمیل تکراری است"
 
-#: user/serializers.py:23
+#: user/serializers.py:29
+msgid "Username already taken"
+msgstr "نام‌کاربری قبلا توسط فرد دیگری انتخاب شده"
+
+#: user/serializers.py:32
 msgid "This name already used by another account, please choose another name"
-msgstr ""
+msgstr "این نام قبلا توسط فرد دیگری انتخاب شده، لطفا نام دیگری انتخاب کنید"
 "این نام قبلا توسط فرد دیگری استفاده شده است، لطفا نام دیگری انتخاب کنید"
 
-#: user/serializers.py:45
-msgid "User doesn't exists"
-msgstr "حساب‌کاربری یافت نشد"
-
-#: user/views.py:43
+#: user/views.py:34
 msgid "Username or password is wrong"
 msgstr "نام‌کاربری یا رمزعبور صحیح نیست"
 
-#: user/views.py:52
+#: user/views.py:43
 msgid "Your early access request registered successfully."
 msgstr "درخواست شما ثبت شد"
 
-#: user/views.py:78
+#: user/views.py:59
 msgid "User has been registered successfully"
 msgstr "حساب‌کاربری با موفقیت ساخته شد"
 
-#: user/views.py:82
-msgid "A user with current email or namespace exists"
-msgstr "کاربری با این ایمیل یا فضانام قبلا ساخته شده است"
+#: user/views.py:63
+msgid ""
+"Sorry about this inconvenience, there is a problem in our side, we'll fix it "
+"soon"
+msgstr "بابت این مشکل متاسفیم و مشکل از سمت ماست، به زودی مشکل رو حل می‌کنیم"
 
-#: user/views.py:97
+#: user/views.py:79
 msgid "Your account has been activated"
 msgstr "حساب کاربری شما فعال شد"
 
-#: user/views.py:99 user/views.py:127
+#: user/views.py:81 user/views.py:109
 msgid "Requested code does not exist"
 msgstr "کد ارسالی یافت نشد"
 
-#: user/views.py:101 user/views.py:129
+#: user/views.py:83 user/views.py:111
 msgid "Invalid request"
 msgstr "درخواست شما معتبر نیست"
 
-#: user/views.py:110
+#: user/views.py:92
 msgid "An email containing account recovery instruction has been sent to you."
 msgstr "ایمیلی حاوی دستورالعملی بازیابی حساب کاربری برای شما ارسال شد"
 
-#: user/views.py:125
+#: user/views.py:107
 msgid "Your password has been changed"
 msgstr "رمز عبور شما با موفقیت تغییر یافت"
+
+#~ msgid "User doesn't exists"
+#~ msgstr "حساب‌کاربری یافت نشد"
+
+#~ msgid "A user with current email or namespace exists"
+#~ msgstr "کاربری با این ایمیل یا فضانام قبلا ساخته شده است"
