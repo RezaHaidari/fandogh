@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 
 class UserSerializer(Serializer):
-    username = serializers.CharField(max_length=32)
+    username = serializers.RegexField(max_length=32, regex=r"^[a-zA-Z0-9\.]{3,32}$", )
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128)
     namespace = serializers.CharField(max_length=20)

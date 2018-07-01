@@ -21,6 +21,15 @@ class RegisterTestCase(APITestCase):
         })
         self.assertEqual(response.status_code, 400)
 
+    def test_create_user_invalid_username(self):
+        response = self.client.post("/api/accounts", {
+            "username": "some_invalid-username",
+            "email": "mahdi@test.co",
+            "password": "some",
+            "namespace": "ns1",
+        })
+        self.assertEqual(response.status_code, 400)
+
 
 class AccountActivation(APITestCase):
     def test_activate_an_account(self):
