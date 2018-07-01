@@ -11,7 +11,7 @@ from django.utils.translation import ugettext as _
 
 
 class UserSerializer(Serializer):
-    username = serializers.RegexField(max_length=32, regex=r"^[a-zA-Z0-9\.]{3,32}$", error_messages={
+    username = serializers.RegexField(max_length=32, regex=r"^[a-zA-Z0-9\._]{3,32}$", error_messages={
         'invalid': _("Only lowercase english letters, digits, dash and dot are allowed in username")
     })
     email = serializers.EmailField()
