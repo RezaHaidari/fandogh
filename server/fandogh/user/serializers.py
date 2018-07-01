@@ -62,7 +62,10 @@ class OTTRequestSerializer(serializers.Serializer):
     def validate(self, attrs):
         attrs = super(OTTRequestSerializer, self).validate(attrs)
         identifier = attrs['identifier'].split("+")[0]
-        user = User.objects.filter(Q(email__startswith=identifier) | Q(username=identifier)).first()
+        if '@' in identifier:
+            user = User.objects.filter(email__startswith=identifier).first()
+        else:
+            user = User.objects.filter(username=identifier).first()
         if user is None:
             raise ValidationError({"identifier": ["There is no user with this email/username"]})
         return {
