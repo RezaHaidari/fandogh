@@ -102,7 +102,8 @@ class OnetimeTokenView(APIView):
                 user_id=serializer.validated_data['id']
             )
             User.objects.filter(id=serializer.validated_data['id']).update(
-                password=make_password(serializer.validated_data['new_password'])
+                password=make_password(serializer.validated_data['new_password']),
+                is_active=True
             )
             return GeneralResponse(_("Your password has been changed"))
         except RecoveryToken.DoesNotExist:
