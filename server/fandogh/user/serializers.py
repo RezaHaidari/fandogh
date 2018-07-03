@@ -63,7 +63,7 @@ class OTTRequestSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         attrs = super(OTTRequestSerializer, self).validate(attrs)
-        identifier = attrs['identifier']
+        identifier = attrs['identifier'].lower()
         if '@' in identifier:
             user = User.objects.filter(email=identifier).first()
         else:
