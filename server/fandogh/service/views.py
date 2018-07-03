@@ -2,13 +2,14 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from common.response import GeneralResponse
-from service.managed_services.mysql import get_deployer, get_deployers
+from service.managed_services.mysql import get_deployers
 from .k8s_deployer import deploy, destroy, logs, get_services
 from image.models import ImageVersion
 from user.util import ClientInfo
 from .serializers import *
+import logging
+
+logger = logging.getLogger("api")
 
 
 class ManagedServiceListView(APIView):
@@ -37,6 +38,9 @@ class ManagedServiceListView(APIView):
                 context.update(user_config)
 
             deploy_result = get_deployer(name).deploy(version, context)
+            logger.debug("New Managed service has been created, Context:{} ".format(
+                context
+            ))
             return Response(deploy_result)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -83,6 +87,7 @@ class ServiceListView(APIView):
                 return Response('Could not find a successfully built image with the given name and version',
                                 status=status.HTTP_404_NOT_FOUND)
 
+            logger.debug("New service has been created, Image name: {}  ".format(image_name))
             data = ServiceResponseSerializer(
                 instance=service).data
             return Response(data)
@@ -96,6 +101,7 @@ class ServiceView(APIView):
             return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
         destroyed = destroy(service_name, client.user)
         if destroyed:
+            logger.debug("service {} has been deleted by user {} ".format(service_name, request.user.username))
             return Response("Service destroyed successfully.")
         else:
             return Response("No service with name {} running".format(service_name))
