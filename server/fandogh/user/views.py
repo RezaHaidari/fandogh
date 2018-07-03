@@ -60,7 +60,7 @@ class AccountView(APIView):
             logger.debug(
                 "New user registered successfully: {}".format(serialized.validated_data['username'])
             )
-            return GeneralResponse(_("User has been registered successfully"), status=status.HTTP_201_CREATED)
+            return GeneralResponse(_("Your account has been created successfully, You need to activate your account using the link we send you"), status=status.HTTP_201_CREATED)
         else:
             return ErrorListResponse(serialized.errors)
 

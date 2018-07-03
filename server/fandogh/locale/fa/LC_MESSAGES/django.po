@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-01 09:33+0000\n"
+"POT-Creation-Date: 2018-07-03 18:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: api/exception_handler.py:26
+msgid ""
+"Sorry about this inconvenience, there is a problem in our side, we'll fix it "
+"soon"
+msgstr "بابت این مشکل متاسفیم و مشکل از سمت ماست، به زودی مشکل رو حل می‌کنیم"
 
 #: api/settings.py:117
 msgid "English"
@@ -32,7 +38,8 @@ msgstr "فارسی"
 #| "you can use lowercase english letters, digits, dash and dot in your "
 #| "username"
 msgid ""
-"Only lowercase english letters, digits, dash and dot are allowed in username"
+"Only lowercase english letters, digits, underscores and dots are allowed in "
+"username"
 msgstr "فقط حروف انگلیسی، اعداد، خط تیره و نقطه در نام‌کاربری قابل‌قبول است"
 
 #: user/serializers.py:29
@@ -61,25 +68,23 @@ msgstr "نام‌کاربری یا رمزعبور صحیح نیست"
 msgid "Your early access request registered successfully."
 msgstr "درخواست شما ثبت شد"
 
-#: user/views.py:59
-msgid "User has been registered successfully"
-msgstr "حساب‌کاربری با موفقیت ساخته شد"
-
 #: user/views.py:63
 msgid ""
-"Sorry about this inconvenience, there is a problem in our side, we'll fix it "
-"soon"
-msgstr "بابت این مشکل متاسفیم و مشکل از سمت ماست، به زودی مشکل رو حل می‌کنیم"
+"Your account has been created successfully, You need to activate your "
+"account using the link we send you"
+msgstr ""
+"حساب کاربری شما با موفقیت ایجاد شد، فقط کافیست برای فعال‌سازی روی لینکی که "
+"برای شما ایمیل کردیم کلیک کنید"
 
-#: user/views.py:79
+#: user/views.py:78
 msgid "Your account has been activated"
 msgstr "حساب کاربری شما فعال شد"
 
-#: user/views.py:81 user/views.py:109
+#: user/views.py:80 user/views.py:113
 msgid "Requested code does not exist"
 msgstr "کد ارسالی یافت نشد"
 
-#: user/views.py:83 user/views.py:111
+#: user/views.py:82 user/views.py:115
 msgid "Invalid request"
 msgstr "درخواست شما معتبر نیست"
 
@@ -87,7 +92,7 @@ msgstr "درخواست شما معتبر نیست"
 msgid "An email containing account recovery instruction has been sent to you."
 msgstr "ایمیلی حاوی دستورالعملی بازیابی حساب کاربری برای شما ارسال شد"
 
-#: user/views.py:107
+#: user/views.py:111
 msgid "Your password has been changed"
 msgstr "رمز عبور شما با موفقیت تغییر یافت"
 
