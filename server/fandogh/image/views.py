@@ -1,3 +1,5 @@
+import logging
+
 from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -9,6 +11,8 @@ from image.image_builder import trigger_image_building
 from image.models import ImageVersion, Image
 from image.serializers import ImageSerializer, ImageVersionSerializer, ImmageBuildSerializer
 from user.util import ClientInfo
+
+logger = logging.getLogger("api")
 
 
 class ImageView(APIView):
@@ -30,6 +34,9 @@ class ImageView(APIView):
         serializer.initial_data['name'] = client.user.namespace.name + '/' + serializer.initial_data['name']
         if serializer.is_valid():
             serializer.save()
+            logger.debug("Image has been successfully created by {} on {} namespace".format(
+                client.user.username, client.user.namespace.name
+            ))
             return Response("Image created successfully")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,18 +57,25 @@ class ImageVersionView(APIView):
                 return ErrorResponse("You cannot publish version for this image", status=status.HTTP_403_FORBIDDEN)
 
         except Image.DoesNotExist as e:
-            return ErrorResponse("Image with this name: {} does not exist".format(image_name), status=status.HTTP_404_NOT_FOUND)
+            return ErrorResponse("Image with this name: {} does not exist".format(image_name),
+                                 status=status.HTTP_404_NOT_FOUND)
 
         version = request.data.get('version', None)
         try:
             if version:
                 existing_version = ImageVersion.objects.filter(image_id=image_name, version=version).first()
                 if existing_version and existing_version.state == 'BUILT':
-                    return ErrorResponse("You already have a successful image built with version:{} for image:{} ".format(version, image_name), status=status.HTTP_400_BAD_REQUEST)
+                    return ErrorResponse(
+                        "You already have a successful image built with version:{} for image:{} ".format(version,
+                                                                                                         image_name),
+                        status=status.HTTP_400_BAD_REQUEST)
 
                 app_version = ImageVersion(image_id=image_name, version=version, source=source_file)
                 app_version.save()
                 trigger_image_building(app_version)
+                logger.debug("New ImageVersion has been successfully created by {} for {}".format(
+                    client.user.username, image_name,
+                ))
                 return Response("Version created successfully")
         except IntegrityError:
             return Response("Image not found", status=404)
