@@ -32,7 +32,7 @@ PRODUCTION_LOGGING = {
     },
     'loggers': {
 
-        'accounts': {
+        'api': {
             'handlers': ['console', 'syslog'],
             'level': 'DEBUG',
             'propagate': True,
@@ -88,7 +88,7 @@ DEVELOPMENT_LOGGING = {
             'class': 'logging.StreamHandler',
         },
         'docker_build': get_file_config("docker_build"),
-        'accounts': get_file_config("accounts"),
+        'api': get_file_config("api"),
         'service_deploy': get_file_config("service_deploy"),
     },
     'root': {
@@ -96,8 +96,8 @@ DEVELOPMENT_LOGGING = {
         'level': 'INFO'
     },
     'loggers': {
-        'accounts': {
-            'handlers': ['console', 'accounts'],
+        'api': {
+            'handlers': ['console', 'api'],
             'level': 'DEBUG',
             'propagate': True,
         },
