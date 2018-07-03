@@ -96,7 +96,7 @@ DEVELOPMENT_LOGGING = {
         'level': 'INFO'
     },
     'loggers': {
-        'accounts.build': {
+        'accounts': {
             'handlers': ['console', 'accounts'],
             'level': 'DEBUG',
             'propagate': True,
