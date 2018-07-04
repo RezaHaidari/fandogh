@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-03 18:31+0000\n"
+"POT-Creation-Date: 2018-07-04 10:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,21 +42,25 @@ msgid ""
 "username"
 msgstr "فقط حروف انگلیسی، اعداد، خط تیره و نقطه در نام‌کاربری قابل‌قبول است"
 
-#: user/serializers.py:29
+#: user/serializers.py:20
+msgid "Only lower case alphanumeric characters, -, and . are allowed"
+msgstr "فقط حروف کوچک انگلیسی و کاراکترهای نقطه و خط تیره(-) مجاز هستند"
+
+#: user/serializers.py:31
 msgid "Email address already exists"
 msgstr "این آدرس ایمیل تکراری است"
 
-#: user/serializers.py:31
+#: user/serializers.py:33
 msgid "Username already taken"
 msgstr "نام‌کاربری قبلا توسط فرد دیگری انتخاب شده"
 
-#: user/serializers.py:34
+#: user/serializers.py:36
 msgid "This name already used by another account, please choose another name"
 msgstr ""
 "این نام قبلا توسط فرد دیگری انتخاب شده، لطفا نام دیگری انتخاب کنیداین نام "
 "قبلا توسط فرد دیگری استفاده شده است، لطفا نام دیگری انتخاب کنید"
 
-#: user/serializers.py:72
+#: user/serializers.py:74
 msgid "There is no user with this email/username"
 msgstr "هیچ کاربری با این ایمیل/نام‌کاربری وجود ندارد"
 
