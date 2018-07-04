@@ -16,7 +16,9 @@ class UserSerializer(Serializer):
     })
     email = serializers.EmailField()
     password = serializers.CharField(max_length=128)
-    namespace = serializers.CharField(max_length=20)
+    namespace = serializers.RegexField(max_length=64, regex=r"^[a-z0-9-\.]+$", error_messages={
+        'invalid': _("Only lower case alphanumeric characters, -, and . are allowed")
+    })
 
     class Meta:
         exclude = ('password',)
