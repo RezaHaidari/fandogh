@@ -1,6 +1,8 @@
-from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, init_stack, NamespaceUnit, VolumeUnit, VolumeClaimUnit
+from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, init_stack, NamespaceUnit, \
+    VolumeUnit, VolumeClaimUnit
 from service.utils import generate_ingress_url
 from django.utils.translation import ugettext as _
+
 mysql_stack = DeploymentStack([
     NamespaceUnit('namespace_template.yml'),
     VolumeUnit('pv_template.yml'),
@@ -21,6 +23,12 @@ class ManagedServiceDeployer(object):
         pass
 
     def get_configurable_options(self):
+        """
+        should return a dictionary in form of :
+        {
+            "config key": "description"
+        }
+        """
         raise NotImplementedError()
 
 
@@ -64,4 +72,9 @@ def get_deployer(managed_service_name):
 
 
 def get_deployers():
-    return deployer.keys()
+    return [
+        {
+            "name": name,
+            "options": deployer_object.get_configurable_options(),
+        } for name, deployer_object in deployer.items()
+    ]
