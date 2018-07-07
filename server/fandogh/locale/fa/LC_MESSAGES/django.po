@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-07 08:04+0000\n"
+"POT-Creation-Date: 2018-07-07 12:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,7 +74,7 @@ msgstr "کد ارسالی یافت نشد"
 msgid "Couldn't find the resource"
 msgstr "متاسفانه موردی که دنبال آن هستید وجود ندارد"
 
-#: service/managed_services/mysql.py:32
+#: service/managed_services/mysql.py:35
 msgid ""
 "Your Mysql service will be ready in a few seconds.\n"
 "You can have access to the PHPMyAdmin via following link:\n"
@@ -86,11 +86,31 @@ msgstr ""
 "{}\n"
 "        "
 
+#: service/managed_services/mysql.py:50
+msgid ""
+"true/false, You can specify this parameter to enable or disable PHPMyAdmin, "
+"default to true"
+msgstr "مقدار true یا false که می‌توانید از طریق این پارامتر PHPMyAdmin را فعال یا غیرفعال کنید"
+
+#: service/managed_services/mysql.py:52
+msgid ""
+"string, you can specify this parameter to change MySQL root password, "
+"default to root"
+msgstr "یک رشته متنی که از طریق آن می‌توانید پسورد روت MySQL را تغییر دهید، به طور پیشفرض root خواهد بود"
+
+#: service/managed_services/mysql.py:54
+msgid ""
+"string, you can specify this parameter to change the name of service, "
+"default to mysql"
+msgstr "یک رشته متنی که از طریق آن می‌توانید نام سرویس خود را مشخص کنید، به صورت پیشفرض mysql خواهد بود"
+
 #: service/serializers.py:14
 msgid ""
 "service name should consist of lowercase letters, digits or dash, for "
 "example my-service2 is valid"
-msgstr "نام سرویس می‌تواند شامل حروف کوچک انگلیسی، ارقام انگلیسی یا خط تیره و نقطه باشه"
+msgstr ""
+"نام سرویس می‌تواند شامل حروف کوچک انگلیسی، ارقام انگلیسی یا خط تیره و نقطه "
+"باشه"
 
 #: service/serializers.py:45
 #, fuzzy
@@ -102,7 +122,10 @@ msgstr "کد ارسالی یافت نشد"
 msgid ""
 "You already have 2 or more running services. Please destroy one of the "
 "previous ones if you want to deploy a new one."
-msgstr "شما تاکنون ۲ تا یا بیشتر سرویس در حال اجرا ساخته‌اید.با توجه به محدودیت حساب کاربریتان حداکثر دو سرویس در حال اجرا می‌توانید داشته باشید، لطفا سرویس‌های قبلی را حذف کنید تا بتوانید سرویس جدید دیپلوی کنید"
+msgstr ""
+"شما تاکنون ۲ تا یا بیشتر سرویس در حال اجرا ساخته‌اید.با توجه به محدودیت حساب "
+"کاربریتان حداکثر دو سرویس در حال اجرا می‌توانید داشته باشید، لطفا سرویس‌های "
+"قبلی را حذف کنید تا بتوانید سرویس جدید دیپلوی کنید"
 
 #: service/views.py:90
 msgid ""

@@ -1,6 +1,8 @@
-from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, init_stack, NamespaceUnit, VolumeUnit, VolumeClaimUnit
+from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, init_stack, NamespaceUnit, \
+    VolumeUnit, VolumeClaimUnit
 from service.utils import generate_ingress_url
 from django.utils.translation import ugettext as _
+
 mysql_stack = DeploymentStack([
     NamespaceUnit('namespace_template.yml'),
     VolumeUnit('pv_template.yml'),
@@ -19,6 +21,15 @@ mysql_stack = DeploymentStack([
 class ManagedServiceDeployer(object):
     def deploy(self, variate_name):
         pass
+
+    def get_configurable_options(self):
+        """
+        should return a dictionary in form of :
+        {
+            "config key": "description"
+        }
+        """
+        raise NotImplementedError()
 
 
 class DefaultMysqlServiceDeployer(ManagedServiceDeployer):
@@ -42,6 +53,15 @@ You can have access to the PHPMyAdmin via following link:
         context['IngressUnit.enabled'] = context.get('phpmyadmin_enabled', True)
         context['mysql_root_password'] = context.get('mysql_root_password', 'root')
 
+    def get_configurable_options(self):
+        return {
+            "phpmyadmin_enabled": _("true/false, You can specify this parameter to enable or disable PHPMyAdmin, "
+                                    "default to true"),
+            "mysql_root_password": _("string, you can specify this parameter to change MySQL root password, default "
+                                     "to root"),
+            "service_name": _("string, you can specify this parameter to change the name of service, default to mysql")
+        }
+
 
 mysql_deployer = DefaultMysqlServiceDeployer()
 deployer = {'mysql': mysql_deployer}
@@ -52,4 +72,9 @@ def get_deployer(managed_service_name):
 
 
 def get_deployers():
-    return deployer.keys()
+    return [
+        {
+            "name": name,
+            "options": deployer_object.get_configurable_options(),
+        } for name, deployer_object in deployer.items()
+    ]
