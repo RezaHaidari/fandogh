@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-07 12:14+0000\n"
+"POT-Creation-Date: 2018-07-07 13:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,7 +74,7 @@ msgstr "کد ارسالی یافت نشد"
 msgid "Couldn't find the resource"
 msgstr "متاسفانه موردی که دنبال آن هستید وجود ندارد"
 
-#: service/managed_services/mysql.py:35
+#: service/managed_services/mysql.py:43
 msgid ""
 "Your Mysql service will be ready in a few seconds.\n"
 "You can have access to the PHPMyAdmin via following link:\n"
@@ -86,23 +86,29 @@ msgstr ""
 "{}\n"
 "        "
 
-#: service/managed_services/mysql.py:50
+#: service/managed_services/mysql.py:58
 msgid ""
 "true/false, You can specify this parameter to enable or disable PHPMyAdmin, "
 "default to true"
-msgstr "مقدار true یا false که می‌توانید از طریق این پارامتر PHPMyAdmin را فعال یا غیرفعال کنید"
+msgstr ""
+"مقدار true یا false که می‌توانید از طریق این پارامتر PHPMyAdmin را فعال یا "
+"غیرفعال کنید"
 
-#: service/managed_services/mysql.py:52
+#: service/managed_services/mysql.py:60
 msgid ""
 "string, you can specify this parameter to change MySQL root password, "
 "default to root"
-msgstr "یک رشته متنی که از طریق آن می‌توانید پسورد روت MySQL را تغییر دهید، به طور پیشفرض root خواهد بود"
+msgstr ""
+"یک رشته متنی که از طریق آن می‌توانید پسورد روت MySQL را تغییر دهید، به طور "
+"پیشفرض root خواهد بود"
 
-#: service/managed_services/mysql.py:54
+#: service/managed_services/mysql.py:62
 msgid ""
 "string, you can specify this parameter to change the name of service, "
 "default to mysql"
-msgstr "یک رشته متنی که از طریق آن می‌توانید نام سرویس خود را مشخص کنید، به صورت پیشفرض mysql خواهد بود"
+msgstr ""
+"یک رشته متنی که از طریق آن می‌توانید نام سرویس خود را مشخص کنید، به صورت "
+"پیشفرض mysql خواهد بود"
 
 #: service/serializers.py:14
 msgid ""
@@ -112,11 +118,15 @@ msgstr ""
 "نام سرویس می‌تواند شامل حروف کوچک انگلیسی، ارقام انگلیسی یا خط تیره و نقطه "
 "باشه"
 
-#: service/serializers.py:45
+#: service/serializers.py:46
 #, fuzzy
 #| msgid "Requested code does not exist"
 msgid "Requested service does not exists as a managed-service"
 msgstr "کد ارسالی یافت نشد"
+
+#: service/serializers.py:52
+msgid "{} is not one of available config options for {}"
+msgstr "{} جز پارامتر‌های صحیح برای تنظیم سرویس {} نیست"
 
 #: service/views.py:79
 msgid ""
