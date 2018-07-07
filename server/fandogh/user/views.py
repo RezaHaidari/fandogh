@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 from common.response import ErrorListResponse
 from common.response import ErrorResponse, GeneralResponse
-from user.models import ActivationCode, RecoveryToken
+from user.models import ActivationCode, RecoveryToken, Namespace
 from user.services import send_confirmation_email, send_recovery_token
 from .serializers import UserSerializer, EarlyAccessRequestSerializer, IdentitySerializer, OTTRequestSerializer, \
     RecoverySerializer
@@ -24,9 +24,14 @@ class TokenView(ObtainJSONWebToken):
             data['username'] = str(data['username']).lower()
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
+            user = serializer.validated_data['user']
+
             token = serializer.object.get('token')
             response_data = {
-                "token": token
+                "token": token,
+                "email": user.email,
+                "username": user.username,
+                "namespaces": [user.namespace.name],
             }
             logger.debug("User logged in successfully: {}".format(data['username']))
             return Response(response_data)
@@ -60,7 +65,9 @@ class AccountView(APIView):
             logger.debug(
                 "New user registered successfully: {}".format(serialized.validated_data['username'])
             )
-            return GeneralResponse(_("Your account has been created successfully, You need to activate your account using the link we send you"), status=status.HTTP_201_CREATED)
+            return GeneralResponse(_(
+                "Your account has been created successfully, You need to activate your account using the link we send you"),
+                status=status.HTTP_201_CREATED)
         else:
             return ErrorListResponse(serialized.errors)
 

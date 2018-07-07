@@ -1,8 +1,9 @@
+import json
 from unittest import mock
 
 from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
-from user.models import ActivationCode, RecoveryToken
+from user.models import ActivationCode, RecoveryToken, Namespace
 
 
 class RegisterTestCase(APITestCase):
@@ -29,7 +30,6 @@ class RegisterTestCase(APITestCase):
             "namespace": "ns1",
         })
         self.assertEqual(response.status_code, 400)
-
 
     def test_create_user_invalid_namespace(self):
         response = self.client.post("/api/accounts", {
@@ -90,7 +90,6 @@ class AccountRecovery(APITestCase):
             mock.call(u),
         ])
 
-
     def test_use_account_recovery_token(self):
         u = User.objects.create_user(
             username="mahdi",
@@ -103,3 +102,21 @@ class AccountRecovery(APITestCase):
         self.assertEqual(r.status_code, 200)
         response = self.client.post("/api/tokens", data=dict(username="mahdi", password="new_test"))
         self.assertEqual(response.status_code, 200)
+
+
+class TokensAPI(APITestCase):
+    def test_tokens_api_should_returns_user_info(self):
+        u = User.objects.create_user(
+            username="test",
+            password="123123",
+            email="test@example.com",
+        )
+        Namespace.objects.create(name="test_namespace", owner=u)
+        response = self.client.post("/api/tokens", data={
+            "username": "test",
+            "password": "123123"
+        })
+        data = json.loads(response.content.decode('utf8'))
+        self.assertEqual(data['username'], "test")
+        self.assertEqual(data['email'], "test@example.com")
+        self.assertEqual(data['namespaces'], ["test_namespace"])
