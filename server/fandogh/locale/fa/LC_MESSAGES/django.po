@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-04 10:20+0000\n"
+"POT-Creation-Date: 2018-07-07 08:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,6 +31,93 @@ msgstr "انگلیسی"
 #: api/settings.py:118
 msgid "Persian"
 msgstr "فارسی"
+
+#: image/views.py:17 service/views.py:15
+msgid "You need to login first."
+msgstr "شما اول باید لاگین کنید تا به سرویس‌های فندق دسترسی داشته باشید"
+
+#: image/views.py:42
+msgid "Image created successfully"
+msgstr "تصویر با موفقیت ایجاد گردید"
+
+#: image/views.py:59
+msgid "You cannot publish version for this image"
+msgstr "شما نمی‌توانید ورژنی برای این تصویر منتشر کنید"
+
+#: image/views.py:62
+msgid "Image with this name: {} does not exist"
+msgstr "تصویر با نام {} وجود ندارد"
+
+#: image/views.py:71
+msgid "You already have a successful image built with version:{} for image:{} "
+msgstr "شما قبلا ورژن {} را برای تصویر  {} با موفقیت ایجاد کرده‌اید"
+
+#: image/views.py:81
+msgid "Version created successfully"
+msgstr "ورژن جدید با موفقیت ساخته شد"
+
+#: image/views.py:83
+msgid "Image not found"
+msgstr "تصویر یافت نشد"
+
+#: image/views.py:84
+msgid "version is necessary"
+msgstr "شماره ورژن اجباری است"
+
+#: image/views.py:95
+#, fuzzy
+#| msgid "Requested code does not exist"
+msgid "Image with name {} does not exist."
+msgstr "کد ارسالی یافت نشد"
+
+#: image/views.py:107 image/views.py:112
+msgid "Couldn't find the resource"
+msgstr "متاسفانه موردی که دنبال آن هستید وجود ندارد"
+
+#: service/managed_services/mysql.py:32
+msgid ""
+"Your Mysql service will be ready in a few seconds.\n"
+"You can have access to the PHPMyAdmin via following link:\n"
+"{}\n"
+"        "
+msgstr ""
+"سرویس MySQL شما تا چند ثانیه دیگر آماده است.\n"
+"از طریق این آدرس می‌توانید به PHPMyAdmin دسترسی داشته باشید:\n"
+"{}\n"
+"        "
+
+#: service/serializers.py:14
+msgid ""
+"service name should consist of lowercase letters, digits or dash, for "
+"example my-service2 is valid"
+msgstr "نام سرویس می‌تواند شامل حروف کوچک انگلیسی، ارقام انگلیسی یا خط تیره و نقطه باشه"
+
+#: service/serializers.py:45
+#, fuzzy
+#| msgid "Requested code does not exist"
+msgid "Requested service does not exists as a managed-service"
+msgstr "کد ارسالی یافت نشد"
+
+#: service/views.py:79
+msgid ""
+"You already have 2 or more running services. Please destroy one of the "
+"previous ones if you want to deploy a new one."
+msgstr "شما تاکنون ۲ تا یا بیشتر سرویس در حال اجرا ساخته‌اید.با توجه به محدودیت حساب کاربریتان حداکثر دو سرویس در حال اجرا می‌توانید داشته باشید، لطفا سرویس‌های قبلی را حذف کنید تا بتوانید سرویس جدید دیپلوی کنید"
+
+#: service/views.py:90
+msgid ""
+"Could not find a successfully built image with the given name and version"
+msgstr "هیچ تصویری که با این نام و ورژن با موفقیت ساخته شده باشد وجود ندارد"
+
+#: service/views.py:108
+#, fuzzy
+#| msgid "Your early access request registered successfully."
+msgid "Service destroyed successfully."
+msgstr "درخواست شما ثبت شد"
+
+#: service/views.py:110
+msgid "No service with name {} running"
+msgstr "هیچ سرویسی به نام {} در حال اجرا نیست"
 
 #: user/serializers.py:15
 #, fuzzy
@@ -64,15 +151,15 @@ msgstr ""
 msgid "There is no user with this email/username"
 msgstr "هیچ کاربری با این ایمیل/نام‌کاربری وجود ندارد"
 
-#: user/views.py:34
+#: user/views.py:39
 msgid "Username or password is wrong"
 msgstr "نام‌کاربری یا رمزعبور صحیح نیست"
 
-#: user/views.py:43
+#: user/views.py:48
 msgid "Your early access request registered successfully."
 msgstr "درخواست شما ثبت شد"
 
-#: user/views.py:63
+#: user/views.py:69
 msgid ""
 "Your account has been created successfully, You need to activate your "
 "account using the link we send you"
@@ -80,23 +167,23 @@ msgstr ""
 "حساب کاربری شما با موفقیت ایجاد شد، فقط کافیست برای فعال‌سازی روی لینکی که "
 "برای شما ایمیل کردیم کلیک کنید"
 
-#: user/views.py:78
+#: user/views.py:85
 msgid "Your account has been activated"
 msgstr "حساب کاربری شما فعال شد"
 
-#: user/views.py:80 user/views.py:113
+#: user/views.py:87 user/views.py:120
 msgid "Requested code does not exist"
 msgstr "کد ارسالی یافت نشد"
 
-#: user/views.py:82 user/views.py:115
+#: user/views.py:89 user/views.py:122
 msgid "Invalid request"
 msgstr "درخواست شما معتبر نیست"
 
-#: user/views.py:92
+#: user/views.py:99
 msgid "An email containing account recovery instruction has been sent to you."
 msgstr "ایمیلی حاوی دستورالعملی بازیابی حساب کاربری برای شما ارسال شد"
 
-#: user/views.py:111
+#: user/views.py:118
 msgid "Your password has been changed"
 msgstr "رمز عبور شما با موفقیت تغییر یافت"
 

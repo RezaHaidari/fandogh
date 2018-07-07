@@ -1,4 +1,6 @@
 # Create your views here.
+from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext as _
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,19 +12,20 @@ from .serializers import *
 import logging
 
 logger = logging.getLogger("api")
+UnAuthorizedResponse = Response(ugettext_lazy("You need to login first."), status.HTTP_401_UNAUTHORIZED)
 
 
 class ManagedServiceListView(APIView):
     def get(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
         return Response(get_deployers(), status=status.HTTP_200_OK)
 
     def post(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
 
         serializer = ManagedServiceSerializer(data=request.data)
         if serializer.is_valid():
@@ -50,7 +53,7 @@ class ServiceListView(APIView):
     def get(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
         data = get_services(client.user)
 
         return Response(ServiceResponseSerializer(instance=data, many=True).data)
@@ -58,7 +61,7 @@ class ServiceListView(APIView):
     def post(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
         serializer = ServiceSerializer(data=request.data)
         if serializer.is_valid():
             image_name = serializer.validated_data['image_name']
@@ -73,7 +76,7 @@ class ServiceListView(APIView):
             if len(running_services) > 1 and list(filter(lambda service: service.get('name', '') == service_name,
                                                          running_services)) == 0 and client.user.username != 'soroosh@yahoo.com':
                 return Response(
-                    "You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one.",
+                    _("You already have 2 or more running services. Please destroy one of the previous ones if you want to deploy a new one."),
                     status=status.HTTP_400_BAD_REQUEST)
 
             version = ImageVersion.objects.filter(image__name=image_name,
@@ -84,7 +87,7 @@ class ServiceListView(APIView):
                 service = deploy(image_name, image_version, service_name, client.user, env_variables, port,
                                  service_type)
             else:
-                return Response('Could not find a successfully built image with the given name and version',
+                return Response(_('Could not find a successfully built image with the given name and version'),
                                 status=status.HTTP_404_NOT_FOUND)
 
             logger.debug("New service has been created, Image name: {}  ".format(image_name))
@@ -98,19 +101,19 @@ class ServiceView(APIView):
     def delete(self, request, service_name):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
         destroyed = destroy(service_name, client.user)
         if destroyed:
             logger.debug("service {} has been deleted by user {} ".format(service_name, request.user.username))
-            return Response("Service destroyed successfully.")
+            return Response(_("Service destroyed successfully."))
         else:
-            return Response("No service with name {} running".format(service_name))
+            return Response(_("No service with name {} running").format(service_name))
 
 
 class ServiceLogView(APIView):
     def get(self, request, service_name):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
 
         return Response(logs(service_name, client.user))

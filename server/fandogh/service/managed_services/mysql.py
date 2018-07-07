@@ -1,6 +1,6 @@
 from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, init_stack, NamespaceUnit, VolumeUnit, VolumeClaimUnit
 from service.utils import generate_ingress_url
-
+from django.utils.translation import ugettext as _
 mysql_stack = DeploymentStack([
     NamespaceUnit('namespace_template.yml'),
     VolumeUnit('pv_template.yml'),
@@ -29,10 +29,10 @@ class DefaultMysqlServiceDeployer(ManagedServiceDeployer):
         php_admin_url = generate_ingress_url(service_name, namespace)
         self.prepare_context(context)
         mysql_stack.deploy(context)
-        message = """Your Mysql service will be ready in a few seconds.
+        message = _("""Your Mysql service will be ready in a few seconds.
 You can have access to the PHPMyAdmin via following link:
 {}
-        """.format(php_admin_url)
+        """).format(php_admin_url)
         return {
             'message': message
         }

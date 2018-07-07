@@ -3,6 +3,7 @@ from rest_framework.exceptions import ValidationError
 from service.managed_services.mysql import get_deployer
 from service.utils import generate_ingress_url
 from user.models import DEFAULT_NAMESPACE
+from django.utils.translation import ugettext as _
 
 
 class ServiceSerializer(serializers.Serializer):
@@ -10,8 +11,8 @@ class ServiceSerializer(serializers.Serializer):
     image_version = serializers.CharField(max_length=100)
     service_name = serializers.RegexField(max_length=100, required=True, allow_blank=False, allow_null=False,
                                           regex=r'^[a-z]+(-*[a-z0-9]+)*$', error_messages={
-            "invalid": "service name should consist of lowercase letters, digits or dash, "
-                       "for example my-service2 is valid"
+            "invalid": _("service name should consist of lowercase letters, digits or dash, "
+                       "for example my-service2 is valid")
         })
     environment_variables = serializers.DictField()
     port = serializers.IntegerField(default=80)
@@ -41,5 +42,5 @@ class ManagedServiceSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if get_deployer(attrs['name']) is None:
-            raise ValidationError({'name': ['Requested service does not exists as a managed-service']})
+            raise ValidationError({'name': [_('Requested service does not exists as a managed-service')]})
         return attrs
