@@ -25,10 +25,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'x@*ete5c86cse&$h_kwbowgdtj(dnkn4p-a)%xpf4&u83c%%l9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 APPEND_SLASH = False
 
-ALLOWED_HOSTS = ['fandogh.cloud', 'localhost','*']
+ALLOWED_HOSTS = ['fandogh.cloud', 'localhost', '*']
 
 # Application definition
 
@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'service.apps.WebappConfig',
     'image.apps.ImageAppConfig',
-    'user.apps.UserConfig'
+    'user.apps.UserConfig',
+    'error_reporter.apps.Config'
 ]
 
 MIDDLEWARE = [
@@ -128,7 +129,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.environ.get("EMAIL_HOST", 'mail.fandogh.cloud')
