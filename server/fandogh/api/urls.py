@@ -23,12 +23,14 @@ from user.views import TokenView, AccountView
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
 urlpatterns += i18n_patterns(
     path('api/tokens', TokenView.as_view()),
     path('api/accounts', AccountView.as_view()),
     # path('api/apps', AppView.as_view()),
     url(r'api/images', include('image.urls')),
     url(r'api/services', include('service.urls')),
+    url(r'api/errors', include('error_reporter.urls')),
     url(r'api/managed-services', include('service.managed_service_urls')),
     url(r'api/users/', include('user.urls')),
     prefix_default_language=False
