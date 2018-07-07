@@ -1,5 +1,6 @@
 import logging
-
+from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy
 from django.db import IntegrityError
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -13,13 +14,14 @@ from image.serializers import ImageSerializer, ImageVersionSerializer, ImmageBui
 from user.util import ClientInfo
 
 logger = logging.getLogger("api")
+UnAuthorizedResponse = Response(ugettext_lazy("You need to login first."), status.HTTP_401_UNAUTHORIZED)
 
 
 class ImageView(APIView):
     def get(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
         images = client.user.images
         data = ImageSerializer(instance=images, many=True).data
         return Response(data)
@@ -27,7 +29,7 @@ class ImageView(APIView):
     def post(self, request):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
         request_data = request.data.copy()
         request_data['owner'] = client.user.id
         serializer = ImageSerializer(data=request_data)
@@ -37,7 +39,7 @@ class ImageView(APIView):
             logger.debug("Image has been successfully created by {} on {} namespace".format(
                 client.user.username, client.user.namespace.name
             ))
-            return Response("Image created successfully")
+            return Response(_("Image created successfully"))
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -48,16 +50,16 @@ class ImageVersionView(APIView):
         source_file = request.FILES.get('source', None)
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
 
         image_name = client.user.namespace.name + '/' + image_name
         try:
             image = Image.objects.get(name=image_name)
             if image.owner.username != client.user.username:
-                return ErrorResponse("You cannot publish version for this image", status=status.HTTP_403_FORBIDDEN)
+                return ErrorResponse(_("You cannot publish version for this image"), status=status.HTTP_403_FORBIDDEN)
 
         except Image.DoesNotExist as e:
-            return ErrorResponse("Image with this name: {} does not exist".format(image_name),
+            return ErrorResponse(_("Image with this name: {} does not exist").format(image_name),
                                  status=status.HTTP_404_NOT_FOUND)
 
         version = request.data.get('version', None)
@@ -66,7 +68,7 @@ class ImageVersionView(APIView):
                 existing_version = ImageVersion.objects.filter(image_id=image_name, version=version).first()
                 if existing_version and existing_version.state == 'BUILT':
                     return ErrorResponse(
-                        "You already have a successful image built with version:{} for image:{} ".format(version,
+                        _("You already have a successful image built with version:{} for image:{} ").format(version,
                                                                                                          image_name),
                         status=status.HTTP_400_BAD_REQUEST)
 
@@ -76,35 +78,35 @@ class ImageVersionView(APIView):
                 logger.debug("New ImageVersion has been successfully created by {} for {}".format(
                     client.user.username, image_name,
                 ))
-                return Response("Version created successfully")
+                return Response(_("Version created successfully"))
         except IntegrityError:
-            return Response("Image not found", status=404)
-        return Response("version is necessary", status=status.HTTP_400_BAD_REQUEST)
+            return Response(_("Image not found"), status=404)
+        return Response(_("version is necessary"), status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, image_name):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
         image_name = client.user.namespace.name + '/' + image_name
         if Image.objects.filter(name=image_name, owner=client.user).exists():
             versions = ImageVersion.objects.filter(image=image_name)
             data = ImageVersionSerializer(instance=versions, many=True).data
             return Response(data)
-        return Response("Image with name {} does not exist.".format(image_name), status=status.HTTP_404_NOT_FOUND)
+        return Response(_("Image with name {} does not exist.").format(image_name), status=status.HTTP_404_NOT_FOUND)
 
 
 class ImageBuildView(APIView):
     def get(self, request, image_name, image_version):
         client = ClientInfo(request)
         if client.is_anonymous():
-            return Response("You need to login first.", status.HTTP_401_UNAUTHORIZED)
+            return UnAuthorizedResponse
 
         image_name = client.user.namespace.name + '/' + image_name
         version = ImageVersion.objects.filter(image=image_name, version=image_version, image__owner=client.user).last()
         if not version:
-            return Response("Couldn't find the resource", status.HTTP_404_NOT_FOUND)
+            return Response(_("Couldn't find the resource"), status.HTTP_404_NOT_FOUND)
         build = version.builds.first()
         if build:
             data = ImmageBuildSerializer(build).data
             return Response(data)
-        return Response("Couldn't find the resource", status=status.HTTP_404_NOT_FOUND)
+        return Response(_("Couldn't find the resource"), status=status.HTTP_404_NOT_FOUND)
