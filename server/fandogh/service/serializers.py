@@ -12,7 +12,7 @@ class ServiceSerializer(serializers.Serializer):
     service_name = serializers.RegexField(max_length=100, required=True, allow_blank=False, allow_null=False,
                                           regex=r'^[a-z]+(-*[a-z0-9]+)*$', error_messages={
             "invalid": _("service name should consist of lowercase letters, digits or dash, "
-                       "for example my-service2 is valid")
+                         "for example my-service2 is valid")
         })
     environment_variables = serializers.DictField()
     port = serializers.IntegerField(default=80)
@@ -41,6 +41,16 @@ class ManagedServiceSerializer(serializers.Serializer):
     config = serializers.DictField()
 
     def validate(self, attrs):
-        if get_deployer(attrs['name']) is None:
+        deployer = get_deployer(attrs['name'])
+        if deployer is None:
             raise ValidationError({'name': [_('Requested service does not exists as a managed-service')]})
+        configurable_options = deployer.get_configurable_options().keys()
+        config_errors = []
+        for user_config_key in attrs.get('config', {}):
+            if user_config_key not in configurable_options:
+                config_errors.append(
+                    _("{} is not one of available config options for {}").format(user_config_key, attrs['name']))
+        if len(config_errors) > 0:
+            raise ValidationError({'config': config_errors})
+
         return attrs
