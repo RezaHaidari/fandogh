@@ -20,6 +20,9 @@ class ManagedServiceDeployer(object):
     def deploy(self, variate_name):
         pass
 
+    def get_configurable_options(self):
+        raise NotImplementedError()
+
 
 class DefaultMysqlServiceDeployer(ManagedServiceDeployer):
     def deploy(self, variate_name, context):
@@ -41,6 +44,15 @@ You can have access to the PHPMyAdmin via following link:
         context['phpmyadmin_enabled'] = context.get('phpmyadmin_enabled', True) in (True, 't', 'true', 1)
         context['IngressUnit.enabled'] = context.get('phpmyadmin_enabled', True)
         context['mysql_root_password'] = context.get('mysql_root_password', 'root')
+
+    def get_configurable_options(self):
+        return {
+            "phpmyadmin_enabled": _("true/false, You can specify this parameter to enable or disable PHPMyAdmin, "
+                                    "default to true"),
+            "mysql_root_password": _("string, you can specify this parameter to change MySQL root password, default "
+                                     "to root"),
+            "service_name": _("string, you can specify this parameter to change the name of service, default to mysql")
+        }
 
 
 mysql_deployer = DefaultMysqlServiceDeployer()
