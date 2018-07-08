@@ -52,6 +52,11 @@ PRODUCTION_LOGGING = {
             'handlers': ['console', 'syslog'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'cli_error': {
+            'handlers': ['console', 'syslog'],
+            'level': 'DEBUG',
+            'propagate': True,
         }
     }
 }
@@ -111,5 +116,10 @@ DEVELOPMENT_LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'cli_error': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
     }
 }
