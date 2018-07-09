@@ -16,6 +16,7 @@ env = Environment(
 
 logger = logging.getLogger("service.deploy")
 error_logger = logging.getLogger("error")
+VOLUME_BASE_PATH = '/mnt/k8s-volumes'
 
 
 class StackUnit(object):
@@ -63,8 +64,15 @@ class ConfigUnit(StackUnit):
 
 
 class VolumeUnit(StackUnit):
+
+    def __init__(self, base_path, template_name, name=None):
+        super().__init__(template_name, name)
+        self.base_path = base_path
+
     def apply(self, context, request_body):
         try:
+            path = os.path.join(self.base_path, context.get('namespace'))
+            os.makedirs(path, exist_ok=True)
             resp = self.k8s_v1.create_persistent_volume(body=request_body)
             return resp
         except Exception as e:
@@ -147,7 +155,7 @@ class DeploymentStack(object):
 
 init_stack = DeploymentStack([
     NamespaceUnit('namespace_template.yml'),
-    VolumeUnit('pv_template.yml'),
+    VolumeUnit(VOLUME_BASE_PATH, 'pv_template.yml'),
     VolumeClaimUnit('pvc_template.yml')
 ])
 

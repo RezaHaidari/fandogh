@@ -1,11 +1,11 @@
 from service.stack import DeploymentStack, DeploymentUnit, ServiceUnit, IngressUnit, init_stack, NamespaceUnit, \
-    VolumeUnit, VolumeClaimUnit
+    VolumeUnit, VolumeClaimUnit, VOLUME_BASE_PATH
 from service.utils import generate_ingress_url
 from django.utils.translation import ugettext as _
 
 mysql_stack = DeploymentStack([
     NamespaceUnit('namespace_template.yml'),
-    VolumeUnit('pv_template.yml'),
+    VolumeUnit(VOLUME_BASE_PATH, 'pv_template.yml'),
     VolumeClaimUnit('pvc_template.yml'),
     DeploymentUnit('managed_services/mysql/deployment_template.yml'),
     ServiceUnit('managed_services/mysql/service_template.yml'),
