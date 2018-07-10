@@ -362,6 +362,71 @@ paths:
           description: "Service not found"
           schema:
             $ref: "#/definitions/MessageResponse"
+  /managed-services:
+    get:
+      tags:
+      - "Services"
+      description: "To get list of managed services"
+      operationId: "get Managed Services"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "AUTHORIZATION"
+        description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+        type: string
+        required: true
+      responses:
+        200:
+          description: "array of managed services"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ManagedServiceModel"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+
+    post:
+      tags:
+      - "Services"
+      description: "To deploy new managed service"
+      operationId: "Deploy a managd Service"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Service deployment context"
+        required: true
+        schema:
+          $ref: "#/definitions/ManagedServiceDeploymentModel"
+      - in: "header"
+        name: "AUTHORIZATION"
+        description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+        type: string
+        required: true
+
+      responses:
+        200:
+          description: "Contains require messages"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        400:
+          description: "Invalid input"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        500:
+          description: "Server Error, Do not rely on response body"
 
 definitions:
   ErrorItem:
@@ -454,7 +519,28 @@ definitions:
         enum:
           - internal
           - external
-
+  ManagedServiceModel:
+    type: object
+    properties:
+      name:
+        type: string
+      options:
+        type: object
+        description: "available options and their description"
+        additionalProperties:
+          type: string
+  ManagedServiceDeploymentModel:
+    type: object
+    properties:
+      name:
+        type: string
+      version:
+        type: string
+      config:
+        type: object
+        description: "an object containing key=>value of config parameters"
+        additionalProperties:
+          type: string
   UserCredentials:
     type: object
     properties:
