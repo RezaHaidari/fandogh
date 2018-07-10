@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   description: "Fandogh API"
   version: "1.0.0"
-  title: "Alachigh API"
+  title: "Fandogh API"
 host: "fandogh.cloud:8080"
 basePath: "/api"
 schemes:
