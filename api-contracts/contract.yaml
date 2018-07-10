@@ -1,0 +1,409 @@
+swagger: "2.0"
+info:
+  description: "Fandogh API"
+  version: "1.0.0"
+  title: "Alachigh API"
+host: "fandogh.cloud:8080"
+basePath: "/api"
+schemes:
+- "http"
+paths:
+  /tokens:
+    post:
+      tags:
+      - "Account"
+      description: "To create a new token"
+      operationId: "Create Token"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "User credentials"
+        required: true
+        schema:
+          $ref: "#/definitions/UserCredentials"
+
+      responses:
+        200:
+          description: "Token and user info"
+          schema:
+            $ref: "#/definitions/TokenResponse"
+        400:
+          description: "Invalid input"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Server Error, Do not rely on response body"
+
+  /images:
+    get:
+      tags:
+      - "Images"
+      description: "To get list of images"
+      operationId: "get Images"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "AUTHORIZATION"
+        description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+        type: string
+        required: true
+      responses:
+        200:
+          description: "array of images"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ImageModel"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+
+    post:
+      tags:
+      - "Images"
+      description: "To create a new image"
+      operationId: "Create Image"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Image name"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateImage"
+      - in: "header"
+        name: "AUTHORIZATION"
+        description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+        type: string
+        required: true
+
+      responses:
+        200:
+          description: "Contains require messages"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        400:
+          description: "Invalid input"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        500:
+          description: "Server Error, Do not rely on response body"
+
+  /images/{name}/versions:
+    get:
+      tags:
+      - "Images"
+      description: "To get list of image versions"
+      operationId: "get Image Versions"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - in: "header"
+          name: "AUTHORIZATION"
+          description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+          type: string
+          required: true
+
+      responses:
+        200:
+          description: "array of images versions"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ImageVersionModel"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        404:
+          description: "Image not found"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+
+    post:
+      tags:
+      - "Images"
+      description: "To create a new image version"
+      operationId: "Create Image Version"
+      consumes:
+       - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: integer
+        - name: source
+          in: formData
+          description: project source file
+          required: true
+          type: file
+        - name: version
+          in: formData
+          description: version number
+          required: true
+          type: string
+        - in: "header"
+          name: "AUTHORIZATION"
+          description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+          type: string
+          required: true
+
+      responses:
+        200:
+          description: "Contains require messages"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        400:
+          description: "Invalid input"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        404:
+          description: "Image not found"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        500:
+          description: "Server Error, Do not rely on response body"
+  /images/{name}/versions/{version}/builds:
+    get:
+      tags:
+      - "Images"
+      description: "To get list of builds for an image version"
+      operationId: "get Builds for an Image Version"
+      produces:
+      - "application/json"
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - name: version
+          in: path
+          required: true
+          type: string
+        - in: "header"
+          name: "AUTHORIZATION"
+          description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+          type: string
+          required: true
+
+      responses:
+        200:
+          description: "array of builds for an image version"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ImageVersionBuildModel"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        404:
+          description: "Image not found"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+
+  /services:
+    get:
+      tags:
+      - "Services"
+      description: "To get list of services"
+      operationId: "get Services"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "header"
+        name: "AUTHORIZATION"
+        description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+        type: string
+        required: true
+      responses:
+        200:
+          description: "array of services"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ServiceModel"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+
+    post:
+      tags:
+      - "Services"
+      description: "To deploy new service"
+      operationId: "Deploy Service"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Service deployment context"
+        required: true
+        schema:
+          $ref: "#/definitions/ServiceDeploymentModel"
+      - in: "header"
+        name: "AUTHORIZATION"
+        description: "in this format: JWT [USER-TOKEN],  where [USER-TOKEN] is user's token"
+        type: string
+        required: true
+
+      responses:
+        200:
+          description: "Contains require messages"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        400:
+          description: "Invalid input"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        401:
+          description: "Authentication required"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+        500:
+          description: "Server Error, Do not rely on response body"
+
+definitions:
+  ErrorItem:
+    type: object
+    additionalProperties:
+      type: string
+      # in form of "field name": ["error1", "error2",..]
+
+  ErrorResponse:
+    type: object
+    properties:
+      errors:
+        type: array
+        items:
+          $ref: "#/definitions/ErrorItem"
+  MessageResponse:
+    type: object
+    properties:
+      contents:
+        type: object
+        properties:
+          message:
+            type: string
+  CreateImage:
+    type: object
+    properties:
+      name:
+        type: string
+  ImageModel:
+    type: object
+    properties:
+      name:
+        type: string
+      owner:
+        type: integer
+      created_at:
+        type: string
+        format: datetime
+  ImageVersionModel:
+    type: object
+    properties:
+      version:
+        type: string
+      state:
+        type: string
+  ImageVersionBuildModel:
+    type: object
+    properties:
+      logs:
+        type: string  # possibly lots of string
+      start_date:
+        type: string
+        format: datetime
+      end_date:
+        type: string
+        format: datetime
+      state:
+        type: string
+  ServiceModel:
+    type: object
+    properties:
+      name:
+        type: string
+      state:
+        type: string
+      service_type:
+        type: string
+      start_date:
+        type: string
+        format: datetime
+  ServiceDeploymentModel:
+    type: object
+    properties:
+      image_name:
+        type: string
+      image_version:
+        type: string
+      service_name:
+        type: string
+      environment_variables:
+        type: object
+        additionalProperties:
+          type: string
+      port:
+        type: integer
+        default: 80
+      service_type:
+        description: "Please consider using a checkbox for being internal or not"
+        type: string
+        enum:
+          - internal
+          - external
+
+  UserCredentials:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  TokenResponse:
+    type: object
+    properties:
+      token:
+        type: string
+      username:
+        type: string
+      email:
+        type: string
+      namespaces:
+        type: array
+        items:
+          type: string
